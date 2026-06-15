@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Menu, X, ChevronDown, UserCircle, Building2 } from "lucide-react";
 import { useNavigate } from "react-router";
+import mmbLogoWhite from "../../imports/MMB_ISO_Logo_White.png";
 
 const navLinks = [
   { label: "Who It's For", href: "#who" },
@@ -69,27 +70,10 @@ export function Navbar() {
         {/* Logo */}
         <a href="/" onClick={(e) => { e.preventDefault(); navigate('/'); }} className="flex items-center gap-3 group">
           <img
-            src="/mmb-logo.png"
+            src={mmbLogoWhite}
             alt="MentorMyBoard — BoardOpp"
             style={{ height: 40, width: 'auto', objectFit: 'contain' }}
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-              (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex';
-            }}
           />
-          {/* Fallback shown only if logo image fails to load */}
-          <div style={{ display: 'none', alignItems: 'center', gap: 10 }}>
-            <div
-              className="flex items-center justify-center rounded-lg"
-              style={{ width: 36, height: 36, background: 'linear-gradient(135deg, #F99F1B, #FFD36A)', boxShadow: '0 0 20px rgba(249,159,27,0.35)' }}
-            >
-              <span style={{ fontFamily: 'var(--font-display)', color: '#0A0A0A', fontSize: 16, fontWeight: 700 }}>B</span>
-            </div>
-            <div>
-              <div style={{ fontFamily: 'var(--font-display)', color: '#F5F0E8', fontSize: 16, fontWeight: 600, lineHeight: 1.1 }}>BoardOpp</div>
-              <div style={{ fontFamily: 'var(--font-mono)', color: '#F99F1B', fontSize: 9, letterSpacing: '0.12em', textTransform: 'uppercase', lineHeight: 1 }}>by MentorMyBoard</div>
-            </div>
-          </div>
         </a>
 
         {/* Desktop links */}

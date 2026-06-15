@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { Linkedin, Twitter, Mail, Phone, MapPin, Instagram } from "lucide-react";
+import mmbLogoWhite from "../../imports/MMB_ISO_Logo_White.png";
 
 const links = {
   "For Directors": ["Explore Opportunities", "Director Readiness Assessment", "Build Board Presence", "Join Community", "Governance Programs"],
@@ -29,24 +30,10 @@ export function Footer() {
           <div className="lg:col-span-1">
             <div className="mb-5">
               <img
-                src="/mmb-logo.png"
-                alt="MentorMyBoard — BoardOpp"
-                style={{ height: 44, width: 'auto', objectFit: 'contain', marginBottom: 4 }}
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex';
-                }}
+                src={mmbLogoWhite}
+                alt="MentorMyBoard"
+                style={{ height: 44, width: 'auto', objectFit: 'contain' }}
               />
-              {/* Fallback logo */}
-              <div style={{ display: 'none', alignItems: 'center', gap: 10 }}>
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #F99F1B, #FFD36A)', boxShadow: '0 0 20px rgba(249,159,27,0.35)' }}>
-                  <span style={{ fontFamily: 'var(--font-display)', color: '#0A0A0A', fontSize: 16, fontWeight: 700 }}>B</span>
-                </div>
-                <div>
-                  <div style={{ fontFamily: 'var(--font-display)', color: '#F5F0E8', fontSize: 15, fontWeight: 600, lineHeight: 1.1 }}>BoardOpp</div>
-                  <div style={{ fontFamily: 'var(--font-mono)', color: '#F99F1B', fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase' }}>by MentorMyBoard</div>
-                </div>
-              </div>
             </div>
             <p style={{ color: '#5A5A6A', fontSize: 12, lineHeight: 1.7, marginBottom: 20 }}>
               India's premier governance ecosystem connecting organizations with board-ready professionals.
