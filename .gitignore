@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+server/node_modules/
+
+# Build output
+dist/
+
+# Environment files (NEVER commit these)
+.env
+.env.local
+.env.production
+server/.env
+
+# Database
+server/*.db
+server/*.db-shm
+server/*.db-wal
+
+# Logs
+*.log
+server-out.txt
+server-err.txt
+vite-out.txt
+vite-err.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Vite temp
+.vite/
