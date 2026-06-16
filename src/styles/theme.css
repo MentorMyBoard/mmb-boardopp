@@ -167,6 +167,11 @@
     color: #F5F0E8;
   }
 
+  /* Admin panel uses the normal OS cursor (no CustomCursor rendered there) */
+  .admin-root {
+    cursor: default;
+  }
+
   /* Checkbox and radio visible */
   input[type="checkbox"],
   input[type="radio"] {

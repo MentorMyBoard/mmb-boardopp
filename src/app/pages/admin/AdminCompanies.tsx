@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { companies, exportCsv } from "../../utils/store";
+import { fetchCompanyLeads, deleteCompanyLead, exportCsv } from "../../utils/store";
 import type { CompanyLead } from "../../utils/store";
 import { Search, Download, Trash2, Eye, X } from "lucide-react";
 
@@ -7,8 +7,16 @@ export function AdminCompanies() {
   const [list, setList] = useState<CompanyLead[]>([]);
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<CompanyLead | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const load = () => setList(companies.getAll());
+  const load = () => {
+    setLoading(true);
+    fetchCompanyLeads()
+      .then((data) => { setList(data); setError(''); })
+      .catch(() => setError('Could not reach the server. Check that the backend is running.'))
+      .finally(() => setLoading(false));
+  };
   useEffect(load, []);
 
   const filtered = list.filter((c) =>
@@ -18,9 +26,9 @@ export function AdminCompanies() {
     c.industry.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm('Delete this company registration?')) {
-      companies.remove(id);
+      await deleteCompanyLead(id);
       load();
       if (selected?.id === id) setSelected(null);
     }
@@ -62,9 +70,9 @@ export function AdminCompanies() {
         />
       </div>
 
-      {filtered.length === 0 ? (
+      {error || loading || filtered.length === 0 ? (
         <div style={{ background: '#1A1A1D', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 14, padding: '48px 24px', textAlign: 'center' }}>
-          <p style={{ color: '#5A5A6A', fontSize: 14 }}>{search ? 'No results.' : 'No company registrations yet.'}</p>
+          <p style={{ color: '#5A5A6A', fontSize: 14 }}>{error || (loading ? 'Loading…' : (search ? 'No results.' : 'No company registrations yet.'))}</p>
         </div>
       ) : (
         <div style={{ background: '#1A1A1D', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 14, overflow: 'hidden' }}>

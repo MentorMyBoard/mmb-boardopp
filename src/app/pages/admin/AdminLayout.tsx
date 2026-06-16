@@ -24,7 +24,7 @@ export function AdminLayout({ children, onLogout }: { children: React.ReactNode;
   const activeHref = navItems.find((n) => n.href === location.pathname)?.href || '/admin';
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0F0F10', display: 'flex', fontFamily: 'system-ui, sans-serif' }}>
+    <div className="admin-root" style={{ minHeight: '100vh', background: '#0F0F10', display: 'flex', fontFamily: 'system-ui, sans-serif' }}>
       {/* Sidebar */}
       <aside
         style={{

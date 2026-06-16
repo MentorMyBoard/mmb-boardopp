@@ -156,6 +156,16 @@ app.get('/api/admin/companies', adminGuard, (req, res) => {
   }
 });
 
+app.delete('/api/admin/directors/:id', adminGuard, (req, res) => {
+  getDb().prepare('DELETE FROM directors WHERE id = ?').run(req.params.id);
+  res.json({ success: true });
+});
+
+app.delete('/api/admin/companies/:id', adminGuard, (req, res) => {
+  getDb().prepare('DELETE FROM companies WHERE id = ?').run(req.params.id);
+  res.json({ success: true });
+});
+
 // ── Health check ───────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', env: process.env.NODE_ENV, timestamp: new Date().toISOString() });

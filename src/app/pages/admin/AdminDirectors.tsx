@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { directors, exportCsv } from "../../utils/store";
+import { fetchDirectorLeads, deleteDirectorLead, exportCsv } from "../../utils/store";
 import type { DirectorLead } from "../../utils/store";
 import { Search, Download, Trash2, Eye, X } from "lucide-react";
 
@@ -7,8 +7,16 @@ export function AdminDirectors() {
   const [list, setList] = useState<DirectorLead[]>([]);
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<DirectorLead | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const load = () => setList(directors.getAll());
+  const load = () => {
+    setLoading(true);
+    fetchDirectorLeads()
+      .then((data) => { setList(data); setError(''); })
+      .catch(() => setError('Could not reach the server. Check that the backend is running.'))
+      .finally(() => setLoading(false));
+  };
   useEffect(load, []);
 
   const filtered = list.filter((d) =>
@@ -18,9 +26,9 @@ export function AdminDirectors() {
     d.location.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm('Delete this director registration?')) {
-      directors.remove(id);
+      await deleteDirectorLead(id);
       load();
       if (selected?.id === id) setSelected(null);
     }
@@ -62,7 +70,11 @@ export function AdminDirectors() {
         />
       </div>
 
-      {filtered.length === 0 ? (
+      {error ? (
+        <EmptyState message={error} />
+      ) : loading ? (
+        <EmptyState message="Loading…" />
+      ) : filtered.length === 0 ? (
         <EmptyState message={search ? 'No results match your search.' : 'No director registrations yet.'} />
       ) : (
         <div style={{ background: '#1A1A1D', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 14, overflow: 'hidden' }}>

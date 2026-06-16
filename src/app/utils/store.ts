@@ -140,6 +140,52 @@ export const directors = {
   },
 };
 
+// --- Live leads (from the real server database, not localStorage) ---
+const ADMIN_API_TOKEN = 'boardopp-admin-2024-secure';
+
+function mapDirectorRow(r: any): DirectorLead {
+  return {
+    id: r.id, name: r.name, email: r.email, phone: r.phone,
+    designation: r.designation, industry: r.industry, experience: r.experience,
+    boardExperience: r.board_experience, linkedin: r.linkedin,
+    expertise: Array.isArray(r.expertise) ? r.expertise.join(', ') : (r.expertise || ''),
+    preferredRole: r.preferred_role, location: r.location,
+    resumeName: r.resume_name, submittedAt: r.submitted_at,
+  };
+}
+
+function mapCompanyRow(r: any): CompanyLead {
+  return {
+    id: r.id, companyName: r.company_name, industry: r.industry,
+    companySize: r.company_size, website: r.website, contactPerson: r.contact_person,
+    designation: r.designation, email: r.email, phone: r.phone,
+    requirementTypes: r.requirementTypes || [], additionalDetails: r.additional_details,
+    submittedAt: r.submitted_at,
+  };
+}
+
+export async function fetchDirectorLeads(): Promise<DirectorLead[]> {
+  const res = await fetch('/api/admin/directors', { headers: { 'x-admin-token': ADMIN_API_TOKEN } });
+  if (!res.ok) throw new Error('Failed to fetch director leads');
+  const { data } = await res.json();
+  return data.map(mapDirectorRow);
+}
+
+export async function fetchCompanyLeads(): Promise<CompanyLead[]> {
+  const res = await fetch('/api/admin/companies', { headers: { 'x-admin-token': ADMIN_API_TOKEN } });
+  if (!res.ok) throw new Error('Failed to fetch company leads');
+  const { data } = await res.json();
+  return data.map(mapCompanyRow);
+}
+
+export async function deleteDirectorLead(id: string): Promise<void> {
+  await fetch(`/api/admin/directors/${id}`, { method: 'DELETE', headers: { 'x-admin-token': ADMIN_API_TOKEN } });
+}
+
+export async function deleteCompanyLead(id: string): Promise<void> {
+  await fetch(`/api/admin/companies/${id}`, { method: 'DELETE', headers: { 'x-admin-token': ADMIN_API_TOKEN } });
+}
+
 // --- Companies ---
 export const companies = {
   getAll: (): CompanyLead[] => getItem<CompanyLead[]>('bo_companies', []),
@@ -189,12 +235,34 @@ export const assessments = {
 
 // --- Partners ---
 const defaultPartners: Partner[] = [
-  { id: 'p1', name: 'SEBI', logo: '', website: '#', order: 1, active: true },
-  { id: 'p2', name: 'CII', logo: '', website: '#', order: 2, active: true },
-  { id: 'p3', name: 'ICSI', logo: '', website: '#', order: 3, active: true },
-  { id: 'p4', name: 'IICA', logo: '', website: '#', order: 4, active: true },
-  { id: 'p5', name: 'FICCI', logo: '', website: '#', order: 5, active: true },
-  { id: 'p6', name: 'ICA', logo: '', website: '#', order: 6, active: true },
+  { id: 'p1', name: 'I-Spark', logo: '/partners/i-spark.jpg', website: '#', order: 1, active: true },
+  { id: 'p2', name: 'PROCS', logo: '/partners/procs.jpg', website: '#', order: 2, active: true },
+  { id: 'p3', name: 'Pantomath', logo: '/partners/pantomath.jpg', website: '#', order: 3, active: true },
+  { id: 'p4', name: 'Pillai', logo: '/partners/pillai.jpg', website: '#', order: 4, active: true },
+  { id: 'p5', name: 'Share India', logo: '/partners/share-india.jpg', website: '#', order: 5, active: true },
+  { id: 'p6', name: 'RTP', logo: '/partners/rtp.jpg', website: '#', order: 6, active: true },
+  { id: 'p7', name: 'Equations', logo: '/partners/equations.jpg', website: '#', order: 7, active: true },
+  { id: 'p8', name: 'Sepentia', logo: '/partners/sepentia.jpg', website: '#', order: 8, active: true },
+  { id: 'p9', name: 'BA', logo: '/partners/ba.jpg', website: '#', order: 9, active: true },
+  { id: 'p10', name: 'Relligio', logo: '/partners/relligio.jpg', website: '#', order: 10, active: true },
+  { id: 'p11', name: 'Optimist', logo: '/partners/optimist.jpg', website: '#', order: 11, active: true },
+  { id: 'p12', name: 'Mentor', logo: '/partners/mentor.jpg', website: '#', order: 12, active: true },
+  { id: 'p13', name: 'ILA', logo: '/partners/ila.jpg', website: '#', order: 13, active: true },
+  { id: 'p14', name: 'Zenesse', logo: '/partners/zenesse.jpg', website: '#', order: 14, active: true },
+  { id: 'p15', name: 'Impact', logo: '/partners/impact.jpg', website: '#', order: 15, active: true },
+  { id: 'p16', name: 'Shunya', logo: '/partners/shunya.jpg', website: '#', order: 16, active: true },
+  { id: 'p17', name: 'P4G', logo: '/partners/p4g.jpg', website: '#', order: 17, active: true },
+  { id: 'p18', name: 'Samsara', logo: '/partners/samsara.jpg', website: '#', order: 18, active: true },
+  { id: 'p19', name: 'Amazin', logo: '/partners/amazin.jpg', website: '#', order: 19, active: true },
+  { id: 'p20', name: 'TerraPledge', logo: '/partners/terrapledge.jpg', website: '#', order: 20, active: true },
+  { id: 'p21', name: 'Legal', logo: '/partners/legal.jpg', website: '#', order: 21, active: true },
+  { id: 'p22', name: 'Ouriken', logo: '/partners/ouriken.jpg', website: '#', order: 22, active: true },
+  { id: 'p23', name: 'Rhyyns', logo: '/partners/rhyyns.jpg', website: '#', order: 23, active: true },
+  { id: 'p24', name: 'Cloud', logo: '/partners/cloud.jpg', website: '#', order: 24, active: true },
+  { id: 'p25', name: 'ESG', logo: '/partners/esg.jpg', website: '#', order: 25, active: true },
+  { id: 'p26', name: 'Prudent', logo: '/partners/prudent.jpg', website: '#', order: 26, active: true },
+  { id: 'p27', name: 'MG', logo: '/partners/mg.jpg', website: '#', order: 27, active: true },
+  { id: 'p28', name: 'Mentor Finance', logo: '/partners/mentor-finance.jpg', website: '#', order: 28, active: true },
 ];
 
 export const partners = {

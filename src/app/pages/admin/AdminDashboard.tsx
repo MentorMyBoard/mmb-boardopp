@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
-import { analytics, directors, companies } from "../../utils/store";
+import { analytics, fetchDirectorLeads, fetchCompanyLeads } from "../../utils/store";
 import type { DirectorLead, CompanyLead, AnalyticsEntry } from "../../utils/store";
 import { Users, Building2, TrendingUp, MousePointerClick, ArrowRight } from "lucide-react";
 
@@ -13,8 +13,18 @@ export function AdminDashboard() {
   const [chartData, setChartData] = useState<AnalyticsEntry[]>([]);
 
   useEffect(() => {
-    setTotals(analytics.getTotals());
     setChartData(analytics.getLast30Days());
+    Promise.all([fetchDirectorLeads(), fetchCompanyLeads()])
+      .then(([dirs, comps]) => {
+        setTotals((t) => ({
+          ...t,
+          totalDirectors: dirs.length,
+          totalCompanies: comps.length,
+          recentDirectors: dirs.slice(0, 5),
+          recentCompanies: comps.slice(0, 5),
+        }));
+      })
+      .catch(() => { /* server unreachable — keep local fallback totals */ });
   }, []);
 
   const stats = [
