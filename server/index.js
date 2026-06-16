@@ -1,7 +1,7 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 const { initDb, getDb } = require('./db');
 const { sendDirectorConfirmation, sendCompanyConfirmation } = require('./email');
 const { createZohoLead } = require('./zoho');
