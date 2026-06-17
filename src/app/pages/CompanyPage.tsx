@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowLeft, ArrowRight, Check, Star, Home } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Home } from "lucide-react";
 import { useNavigate } from "react-router";
 import { companies, content } from "../utils/store";
 import { useSEO } from "../hooks/useSEO";
 import { CustomCursor } from "../components/CustomCursor";
-import { WhatsAppButton } from "../components/WhatsAppButton";
-
 const WHATSAPP_URL = "https://wa.me/918655430211";
 
 const STEPS = ["Company Info", "Contact Details", "Board Requirement", "Additional Info"];
@@ -80,44 +78,6 @@ function SuccessCard({ assessmentUrl }: { assessmentUrl: string }) {
           </p>
         </motion.div>
 
-        {/* Board Assessment card */}
-        <motion.div
-          animate={{ rotateY: [0, 4, -4, 0], y: [0, -6, 0] }}
-          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-          className="relative rounded-3xl p-8 mx-auto mb-8"
-          style={{
-            maxWidth: 380,
-            background: 'linear-gradient(135deg, rgba(25,25,112,0.2) 0%, rgba(255,255,255,0.04) 100%)',
-            border: '1px solid rgba(25,25,112,0.5)',
-            backdropFilter: 'blur(24px)',
-            boxShadow: '0 0 60px rgba(25,25,112,0.25), 0 0 30px rgba(249,159,27,0.1), 0 32px 80px rgba(0,0,0,0.4)',
-            transformStyle: 'preserve-3d',
-          }}
-        >
-          <motion.div
-            className="absolute inset-0 rounded-3xl pointer-events-none"
-            animate={{ boxShadow: ['0 0 20px rgba(25,25,112,0.2)', '0 0 50px rgba(25,25,112,0.4)', '0 0 20px rgba(25,25,112,0.2)'] }}
-            transition={{ duration: 3, repeat: Infinity }}
-          />
-          <div className="flex items-center gap-3 mb-5">
-            {[...Array(5)].map((_, i) => <Star key={i} size={14} fill="#F99F1B" color="#F99F1B" />)}
-          </div>
-          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 400, color: '#F5F0E8', lineHeight: 1.2, marginBottom: 12, letterSpacing: '-0.02em' }}>
-            How Strong Is Your Board?
-          </h3>
-          <p style={{ color: '#7A7A8A', fontSize: 14, lineHeight: 1.65, marginBottom: 24 }}>
-            Assess your governance maturity and discover opportunities to strengthen your board effectiveness.
-          </p>
-          <a
-            href={assessmentUrl || '#'}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'linear-gradient(135deg, #F99F1B, #FFD36A)', color: '#0A0A0A', fontSize: 13, fontWeight: 600, padding: '12px 22px', borderRadius: 9, border: 'none', cursor: 'pointer', boxShadow: '0 0 20px rgba(249,159,27,0.35)', textDecoration: 'none' }}
-          >
-            Take Board Assessment <ArrowRight size={14} />
-          </a>
-        </motion.div>
-
         {/* Action row */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -166,8 +126,6 @@ function SuccessCard({ assessmentUrl }: { assessmentUrl: string }) {
           </button>
         </motion.div>
       </div>
-
-      <WhatsAppButton />
     </motion.div>
   );
 }
@@ -481,7 +439,6 @@ export function CompanyPage() {
         </div>
       </div>
     </div>
-    <WhatsAppButton />
     </>
   );
 }

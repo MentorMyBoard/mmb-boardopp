@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router";
 import { useEffect } from "react";
 import { analytics } from "./utils/store";
 import { useSEO } from "./hooks/useSEO";
@@ -20,9 +20,16 @@ import { Testimonials } from "./components/Testimonials";
 import { FinalCTA } from "./components/FinalCTA";
 import { Footer } from "./components/Footer";
 import { CookieBanner } from "./components/CookieBanner";
+import { WhatsAppButton } from "./components/WhatsAppButton";
 import { DirectorPage } from "./pages/DirectorPage";
 import { CompanyPage } from "./pages/CompanyPage";
 import { AdminApp } from "./pages/admin/AdminApp";
+
+function PersistentWhatsApp() {
+  const location = useLocation();
+  if (location.pathname.startsWith('/admin')) return null;
+  return <WhatsAppButton />;
+}
 
 function HomePage() {
   useEffect(() => {
@@ -65,6 +72,7 @@ function HomePage() {
 export default function App() {
   return (
     <BrowserRouter>
+      <PersistentWhatsApp />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/join" element={<DirectorPage />} />
