@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowLeft, ArrowRight, Check, Star } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Star, Home } from "lucide-react";
 import { useNavigate } from "react-router";
 import { companies, content } from "../utils/store";
 import { useSEO } from "../hooks/useSEO";
 import { CustomCursor } from "../components/CustomCursor";
+import { WhatsAppButton } from "../components/WhatsAppButton";
+
+const WHATSAPP_URL = "https://wa.me/918655430211";
 
 const STEPS = ["Company Info", "Contact Details", "Board Requirement", "Additional Info"];
 
@@ -32,55 +35,70 @@ const defaultForm: FormData = {
 };
 
 function SuccessCard({ assessmentUrl }: { assessmentUrl: string }) {
+  const navigate = useNavigate();
+
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.85 }}
+      initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
       className="flex items-center justify-center min-h-screen px-6"
-      style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 30%, rgba(136,144,255,0.06) 0%, #0A0A0A 70%)' }}
+      style={{ background: 'radial-gradient(ellipse 90% 70% at 80% 20%, rgba(25,25,112,0.5) 0%, transparent 60%), radial-gradient(ellipse 70% 50% at 20% 80%, rgba(249,159,27,0.07) 0%, transparent 60%), #0A0A0A' }}
     >
-      <div className="text-center max-w-lg">
+      {/* Midnight blue ambient flare */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          style={{ position: 'absolute', top: '-15%', right: '-5%', width: '55%', height: '55%', borderRadius: '50%', background: 'radial-gradient(circle, rgba(25,25,112,0.3) 0%, transparent 70%)' }}
+          animate={{ scale: [1, 1.2, 1], opacity: [0.6, 1, 0.6] }}
+          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          style={{ position: 'absolute', bottom: '-10%', left: '5%', width: '40%', height: '40%', borderRadius: '50%', background: 'radial-gradient(circle, rgba(25,25,112,0.2) 0%, transparent 70%)' }}
+          animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.7, 0.3] }}
+          transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
+        />
+      </div>
+
+      <div className="relative text-center max-w-lg w-full">
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.3, type: 'spring', stiffness: 300 }}
           className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8"
-          style={{ background: 'linear-gradient(135deg, #F99F1B, #FFD36A)', boxShadow: '0 0 40px rgba(249,159,27,0.4)' }}
+          style={{ background: 'linear-gradient(135deg, #F99F1B, #FFD36A)', boxShadow: '0 0 40px rgba(249,159,27,0.4), 0 0 80px rgba(25,25,112,0.3)' }}
         >
           <Check size={36} color="#0A0A0A" strokeWidth={2.5} />
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#F99F1B', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>Requirement Received</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#F99F1B', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>Requirement Received ✓</div>
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 400, color: '#F5F0E8', lineHeight: 1.15, letterSpacing: '-0.02em', marginBottom: 16 }}>
             Building a Stronger Board.
           </h2>
-          <p style={{ color: '#7A7A8A', fontSize: 15, lineHeight: 1.7, marginBottom: 40 }}>
+          <p style={{ color: '#7A7A8A', fontSize: 15, lineHeight: 1.7, marginBottom: 36 }}>
             Your governance requirement has been registered. Our team will reach out within 3–5 business days with curated governance profiles.
           </p>
         </motion.div>
 
         {/* Board Assessment card */}
         <motion.div
-          animate={{ rotateY: [0, 5, -5, 0], y: [0, -8, 0] }}
+          animate={{ rotateY: [0, 4, -4, 0], y: [0, -6, 0] }}
           transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
           className="relative rounded-3xl p-8 mx-auto mb-8"
           style={{
             maxWidth: 380,
-            background: 'rgba(255,255,255,0.05)',
-            border: '1px solid rgba(249,159,27,0.25)',
+            background: 'linear-gradient(135deg, rgba(25,25,112,0.2) 0%, rgba(255,255,255,0.04) 100%)',
+            border: '1px solid rgba(25,25,112,0.5)',
             backdropFilter: 'blur(24px)',
-            boxShadow: '0 0 60px rgba(249,159,27,0.12), 0 32px 80px rgba(0,0,0,0.4)',
+            boxShadow: '0 0 60px rgba(25,25,112,0.25), 0 0 30px rgba(249,159,27,0.1), 0 32px 80px rgba(0,0,0,0.4)',
             transformStyle: 'preserve-3d',
           }}
         >
           <motion.div
             className="absolute inset-0 rounded-3xl pointer-events-none"
-            animate={{ boxShadow: ['0 0 30px rgba(249,159,27,0.1)', '0 0 60px rgba(249,159,27,0.25)', '0 0 30px rgba(249,159,27,0.1)'] }}
+            animate={{ boxShadow: ['0 0 20px rgba(25,25,112,0.2)', '0 0 50px rgba(25,25,112,0.4)', '0 0 20px rgba(25,25,112,0.2)'] }}
             transition={{ duration: 3, repeat: Infinity }}
           />
-
           <div className="flex items-center gap-3 mb-5">
             {[...Array(5)].map((_, i) => <Star key={i} size={14} fill="#F99F1B" color="#F99F1B" />)}
           </div>
@@ -94,17 +112,62 @@ function SuccessCard({ assessmentUrl }: { assessmentUrl: string }) {
             href={assessmentUrl || '#'}
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              background: 'linear-gradient(135deg, #F99F1B, #FFD36A)', color: '#0A0A0A',
-              fontSize: 13, fontWeight: 600, padding: '12px 22px', borderRadius: 9, border: 'none',
-              cursor: 'pointer', boxShadow: '0 0 20px rgba(249,159,27,0.35)', textDecoration: 'none',
-            }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'linear-gradient(135deg, #F99F1B, #FFD36A)', color: '#0A0A0A', fontSize: 13, fontWeight: 600, padding: '12px 22px', borderRadius: 9, border: 'none', cursor: 'pointer', boxShadow: '0 0 20px rgba(249,159,27,0.35)', textDecoration: 'none' }}
           >
             Take Board Assessment <ArrowRight size={14} />
           </a>
         </motion.div>
+
+        {/* Action row */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-3"
+        >
+          {/* WhatsApp */}
+          <a
+            href={WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 10,
+              background: 'linear-gradient(135deg, #191970, #25D366)',
+              color: '#fff', fontSize: 13, fontWeight: 600,
+              padding: '12px 22px', borderRadius: 10, textDecoration: 'none',
+              boxShadow: '0 4px 20px rgba(25,25,112,0.4)',
+              transition: 'box-shadow 0.2s',
+            }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 32px rgba(25,25,112,0.6)'; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(25,25,112,0.4)'; }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+            Discuss on WhatsApp
+          </a>
+
+          {/* Go Home */}
+          <button
+            onClick={() => navigate('/')}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              background: 'rgba(25,25,112,0.15)',
+              border: '1px solid rgba(25,25,112,0.5)',
+              color: '#A0A8F0', fontSize: 13, fontWeight: 500,
+              padding: '12px 22px', borderRadius: 10, cursor: 'none',
+              backdropFilter: 'blur(8px)',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(25,25,112,0.3)'; e.currentTarget.style.borderColor = 'rgba(25,25,112,0.8)'; e.currentTarget.style.color = '#F5F0E8'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(25,25,112,0.15)'; e.currentTarget.style.borderColor = 'rgba(25,25,112,0.5)'; e.currentTarget.style.color = '#A0A8F0'; }}
+          >
+            <Home size={14} /> Go to Home Page
+          </button>
+        </motion.div>
       </div>
+
+      <WhatsAppButton />
     </motion.div>
   );
 }
@@ -209,7 +272,7 @@ export function CompanyPage() {
 
   return (
     <><CustomCursor />
-    <div style={{ minHeight: '100vh', background: 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(15,23,42,0.9) 0%, #0A0A0A 60%)', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: 'radial-gradient(ellipse 80% 60% at 30% -10%, rgba(25,25,112,0.7) 0%, rgba(25,25,112,0.1) 50%, #0A0A0A 80%)', display: 'flex', flexDirection: 'column' }}>
       {/* Navbar */}
       <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <button
@@ -272,7 +335,7 @@ export function CompanyPage() {
             exit={{ opacity: 0, x: -30 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             className="rounded-3xl p-8"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(24px)' }}
+            style={{ background: 'linear-gradient(135deg, rgba(25,25,112,0.12) 0%, rgba(255,255,255,0.03) 100%)', border: '1px solid rgba(25,25,112,0.35)', backdropFilter: 'blur(24px)' }}
           >
             {step === 0 && (
               <div className="flex flex-col gap-5">
@@ -418,6 +481,7 @@ export function CompanyPage() {
         </div>
       </div>
     </div>
+    <WhatsAppButton />
     </>
   );
 }
