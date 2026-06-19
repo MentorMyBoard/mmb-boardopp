@@ -17,6 +17,7 @@ const navLinks = [
   },
   { label: "Ecosystem", href: "#ecosystem" },
   { label: "Partners", href: "#partners" },
+  { label: "Explore MMB", href: "#mmb-ecosystem", highlight: true },
 ];
 
 export function Navbar() {
@@ -95,6 +96,27 @@ export function Navbar() {
                     size={12}
                     style={{ transition: 'transform 0.2s', transform: activeDropdown === link.label ? 'rotate(180deg)' : 'rotate(0deg)' }}
                   />
+                </button>
+              ) : link.highlight ? (
+                <button
+                  onClick={() => handleNavClick(link.href)}
+                  style={{
+                    color: '#191970', fontSize: 12, fontWeight: 600, letterSpacing: '0.04em',
+                    background: 'rgba(25,25,112,0.15)', border: '1px solid rgba(25,25,112,0.4)',
+                    borderRadius: 7, padding: '5px 12px', cursor: 'none', transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#191970';
+                    e.currentTarget.style.color = '#F0EDE8';
+                    e.currentTarget.style.borderColor = '#191970';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(25,25,112,0.15)';
+                    e.currentTarget.style.color = '#191970';
+                    e.currentTarget.style.borderColor = 'rgba(25,25,112,0.4)';
+                  }}
+                >
+                  {link.label}
                 </button>
               ) : (
                 <button
@@ -203,7 +225,9 @@ export function Navbar() {
               <div key={link.label}>
                 <button
                   onClick={() => link.dropdown ? null : handleNavClick(link.href)}
-                  style={{ color: '#9B9B9B', fontSize: 15, background: 'none', border: 'none', cursor: 'none', padding: '4px 0', width: '100%', textAlign: 'left' }}
+                  style={link.highlight
+                    ? { color: '#7B8CDE', fontSize: 14, fontWeight: 600, background: 'rgba(25,25,112,0.15)', border: '1px solid rgba(25,25,112,0.3)', borderRadius: 8, padding: '8px 14px', cursor: 'none', width: '100%', textAlign: 'left' }
+                    : { color: '#9B9B9B', fontSize: 15, background: 'none', border: 'none', cursor: 'none', padding: '4px 0', width: '100%', textAlign: 'left' }}
                 >
                   {link.label}
                 </button>

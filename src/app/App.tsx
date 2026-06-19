@@ -19,6 +19,7 @@ import { TrustImpact } from "./components/TrustImpact";
 import { Testimonials } from "./components/Testimonials";
 import { FinalCTA } from "./components/FinalCTA";
 import { Footer } from "./components/Footer";
+import { MmbEcosystem } from "./components/MmbEcosystem";
 import { CookieBanner } from "./components/CookieBanner";
 import { WhatsAppButton } from "./components/WhatsAppButton";
 import { DirectorPage } from "./pages/DirectorPage";
@@ -63,6 +64,7 @@ function HomePage() {
         <Testimonials />
         <FinalCTA />
       </main>
+      <MmbEcosystem />
       <Footer />
       <CookieBanner />
     </div>
