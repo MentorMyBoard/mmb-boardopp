@@ -101,19 +101,17 @@ export function Navbar() {
                 <button
                   onClick={() => handleNavClick(link.href)}
                   style={{
-                    color: '#191970', fontSize: 12, fontWeight: 600, letterSpacing: '0.04em',
-                    background: 'rgba(25,25,112,0.15)', border: '1px solid rgba(25,25,112,0.4)',
+                    color: '#F0EDE8', fontSize: 12, fontWeight: 600, letterSpacing: '0.04em',
+                    background: 'transparent', border: '1px solid #F99F1B',
                     borderRadius: 7, padding: '5px 12px', cursor: 'none', transition: 'all 0.2s',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = '#191970';
-                    e.currentTarget.style.color = '#F0EDE8';
-                    e.currentTarget.style.borderColor = '#191970';
+                    e.currentTarget.style.background = '#F99F1B';
+                    e.currentTarget.style.color = '#08081C';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'rgba(25,25,112,0.15)';
-                    e.currentTarget.style.color = '#191970';
-                    e.currentTarget.style.borderColor = 'rgba(25,25,112,0.4)';
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = '#F0EDE8';
                   }}
                 >
                   {link.label}
