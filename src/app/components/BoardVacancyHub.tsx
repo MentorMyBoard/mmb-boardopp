@@ -45,7 +45,7 @@ export function BoardVacancyHub() {
   };
 
   return (
-    <section id="vacancy" ref={ref} style={{ background: '#0A0A0A', padding: '120px 0', position: 'relative', overflow: 'hidden' }}>
+    <section id="vacancy" ref={ref} style={{ background: '#08081C', padding: '120px 0', position: 'relative', overflow: 'hidden' }}>
       {/* Background ambience */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 70% 50% at 50% 50%, rgba(249,159,27,0.04) 0%, transparent 70%)' }} />
 
@@ -59,9 +59,9 @@ export function BoardVacancyHub() {
           <div className="inline-flex items-center gap-2 mb-5 px-3 py-1.5 rounded-full" style={{ background: 'rgba(249,159,27,0.08)', border: '1px solid rgba(249,159,27,0.2)' }}>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#F99F1B', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Board Vacancy Hub</span>
           </div>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4.5vw,3.5rem)', fontWeight: 400, color: '#F5F0E8', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4.5vw,3.5rem)', fontWeight: 600, color: '#F5F0E8', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
             Board Opportunities{' '}
-            <em style={{ fontStyle: 'italic', color: '#F99F1B' }}>Begin Here</em>
+            <em style={{ color: '#F99F1B' }}>Begin Here</em>
           </h2>
           <p style={{ color: '#6A6A7A', fontSize: 16, lineHeight: 1.6, maxWidth: 520, margin: '16px auto 0' }}>
             Whether you are looking for board opportunities or seeking board talent, start by registering your interest.
@@ -152,7 +152,7 @@ export function BoardVacancyHub() {
                   </div>
 
                   {/* Headline */}
-                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.5rem,3vw,2rem)', fontWeight: 400, color: '#F5F0E8', lineHeight: 1.15, letterSpacing: '-0.02em', marginBottom: 16 }}>
+                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.5rem,3vw,2rem)', fontWeight: 600, color: '#F5F0E8', lineHeight: 1.15, letterSpacing: '-0.02em', marginBottom: 16 }}>
                     {card.headline}
                   </h3>
 
@@ -166,7 +166,7 @@ export function BoardVacancyHub() {
                     onClick={() => navigate(card.href)}
                     className="flex items-center gap-3 group/btn"
                     style={{
-                      background: i === 0 ? 'linear-gradient(135deg, #F99F1B, #FFD36A)' : 'transparent',
+                      background: i === 0 ? '#F99F1B' : 'transparent',
                       color: i === 0 ? '#0A0A0A' : card.accent,
                       fontSize: 14,
                       fontWeight: 600,

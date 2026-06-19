@@ -40,7 +40,7 @@ export function ForOrganizations() {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section id="organizations" ref={ref} style={{ background: '#0A0A0A', padding: '120px 0' }}>
+    <section id="organizations" ref={ref} style={{ background: '#08081C', padding: '120px 0' }}>
       <div className="max-w-7xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -52,8 +52,8 @@ export function ForOrganizations() {
             <div className="inline-flex items-center gap-2 mb-5 px-3 py-1.5 rounded-full" style={{ background: 'rgba(249,159,27,0.08)', border: '1px solid rgba(249,159,27,0.2)' }}>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#F99F1B', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Enterprise Solutions</span>
             </div>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4.5vw,3.5rem)', fontWeight: 400, color: '#F5F0E8', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
-              For <em style={{ fontStyle: 'italic', color: '#F99F1B' }}>Organizations</em>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4.5vw,3.5rem)', fontWeight: 600, color: '#F5F0E8', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
+              For <em style={{ color: '#F99F1B' }}>Organizations</em>
             </h2>
             <p style={{ color: '#6A6A7A', fontSize: 16, lineHeight: 1.6, maxWidth: 460, marginTop: 12 }}>
               End-to-end governance solutions for companies that take boardroom excellence seriously.
@@ -61,7 +61,7 @@ export function ForOrganizations() {
           </div>
           <button
             style={{
-              background: 'linear-gradient(135deg, #F99F1B, #FFD36A)',
+              background: '#F99F1B',
               color: '#0A0A0A',
               fontSize: 13,
               fontWeight: 600,

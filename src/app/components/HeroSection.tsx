@@ -117,7 +117,7 @@ export function HeroSection() {
       className="relative overflow-hidden"
       style={{
         minHeight: '100vh',
-        background: 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(15,23,42,0.9) 0%, #0A0A0A 60%)',
+        background: 'radial-gradient(ellipse 90% 60% at 50% -5%, rgba(25,25,112,0.6) 0%, rgba(25,25,112,0.15) 50%, #08081C 80%)',
       }}
     >
       {/* Canvas background */}
@@ -159,7 +159,7 @@ export function HeroSection() {
           style={{
             fontFamily: 'var(--font-display)',
             fontSize: 'clamp(2.8rem, 7vw, 6.5rem)',
-            fontWeight: 400,
+            fontWeight: 600,
             lineHeight: 1.06,
             color: '#F5F0E8',
             maxWidth: 900,
@@ -167,16 +167,9 @@ export function HeroSection() {
           }}
         >
           The Future of{' '}
-          <em
-            style={{
-              fontStyle: 'italic',
-              background: 'linear-gradient(135deg, #F99F1B, #FFD36A)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
+          <span style={{ color: '#F99F1B' }}>
             Board Opportunities
-          </em>
+          </span>
           <br />Starts Here.
         </motion.h1>
 
@@ -206,7 +199,7 @@ export function HeroSection() {
         >
           <button
             style={{
-              background: 'linear-gradient(135deg, #F99F1B, #FFD36A)',
+              background: '#F99F1B',
               color: '#0A0A0A',
               fontSize: 14,
               fontWeight: 600,

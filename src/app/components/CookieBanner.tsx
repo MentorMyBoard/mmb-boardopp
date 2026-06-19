@@ -130,7 +130,7 @@ export function CookieBanner() {
                 display: "flex",
                 alignItems: "center",
                 gap: 6,
-                background: "linear-gradient(135deg, #F99F1B, #FFD36A)",
+                background: "#F99F1B",
                 color: "#0A0A0A",
                 fontSize: 12,
                 fontWeight: 700,

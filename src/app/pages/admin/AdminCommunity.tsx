@@ -74,7 +74,7 @@ function Modal({ title, data, onSave, onClose }: { title: string; data: Partial<
         </div>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 20 }}>
           <button onClick={onClose} style={{ padding: '9px 16px', borderRadius: 9, background: 'rgba(255,255,255,0.06)', border: 'none', color: '#9B9BAB', fontSize: 13, cursor: 'pointer' }}>Cancel</button>
-          <button onClick={() => onSave(form as CommunityMember)} style={{ padding: '9px 18px', borderRadius: 9, background: 'linear-gradient(135deg,#F99F1B,#FFD36A)', border: 'none', color: '#0A0A0A', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Save</button>
+          <button onClick={() => onSave(form as CommunityMember)} style={{ padding: '9px 18px', borderRadius: 9, background: '#F99F1B', border: 'none', color: '#0A0A0A', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Save</button>
         </div>
       </div>
     </div>
@@ -104,7 +104,7 @@ export function AdminCommunity() {
           <h2 style={{ color: '#F5F0E8', fontSize: 20, fontWeight: 500, marginBottom: 4 }}>Board Talent Community</h2>
           <p style={{ color: '#6A6A7A', fontSize: 13 }}>Manage profiles displayed in the community section.</p>
         </div>
-        <button onClick={() => setModal({ mode: 'add', data: { order: list.length + 1, expertise: [], badges: [] } })} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'linear-gradient(135deg,#F99F1B,#FFD36A)', border: 'none', color: '#0A0A0A', fontSize: 13, fontWeight: 600, padding: '9px 18px', borderRadius: 9, cursor: 'pointer' }}>
+        <button onClick={() => setModal({ mode: 'add', data: { order: list.length + 1, expertise: [], badges: [] } })} style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#F99F1B', border: 'none', color: '#0A0A0A', fontSize: 13, fontWeight: 600, padding: '9px 18px', borderRadius: 9, cursor: 'pointer' }}>
           <Plus size={14} /> Add Member
         </button>
       </div>

@@ -108,9 +108,9 @@ export function OurPartners() {
           <div className="inline-flex items-center gap-2 mb-5 px-3 py-1.5 rounded-full" style={{ background: 'rgba(249,159,27,0.1)', border: '1px solid rgba(249,159,27,0.25)' }}>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#C47E0F', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Governance Network</span>
           </div>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4.5vw,3.5rem)', fontWeight: 400, color: '#1A1A2A', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4.5vw,3.5rem)', fontWeight: 600, color: '#1A1A2A', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
             Our{' '}
-            <em style={{ fontStyle: 'italic', color: '#F99F1B' }}>Partners</em>
+            <em style={{ color: '#F99F1B' }}>Partners</em>
           </h2>
           <p style={{ color: '#5A5A6A', fontSize: 16, lineHeight: 1.6, maxWidth: 480, margin: '16px auto 0' }}>
             Collaborating with India's leading institutions, knowledge bodies, and governance organizations to build a stronger boardroom ecosystem.

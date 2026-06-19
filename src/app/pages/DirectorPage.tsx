@@ -42,7 +42,7 @@ function SuccessCard({ assessmentUrl }: { assessmentUrl: string }) {
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
       className="flex items-center justify-center min-h-screen px-6"
       style={{
-        background: 'radial-gradient(ellipse 90% 70% at 20% 20%, rgba(25,25,112,0.5) 0%, transparent 60%), radial-gradient(ellipse 70% 50% at 80% 80%, rgba(249,159,27,0.08) 0%, transparent 60%), #0A0A0A',
+        background: 'radial-gradient(ellipse 90% 70% at 20% 20%, rgba(25,25,112,0.5) 0%, transparent 60%), radial-gradient(ellipse 70% 50% at 80% 80%, rgba(249,159,27,0.08) 0%, transparent 60%), #08081C',
       }}
     >
       {/* Midnight blue ambient flare */}
@@ -66,14 +66,14 @@ function SuccessCard({ assessmentUrl }: { assessmentUrl: string }) {
           animate={{ scale: 1 }}
           transition={{ delay: 0.3, type: 'spring', stiffness: 300 }}
           className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8"
-          style={{ background: 'linear-gradient(135deg, #F99F1B, #FFD36A)', boxShadow: '0 0 40px rgba(249,159,27,0.4), 0 0 80px rgba(25,25,112,0.3)' }}
+          style={{ background: '#F99F1B', boxShadow: '0 0 40px rgba(249,159,27,0.4), 0 0 80px rgba(25,25,112,0.3)' }}
         >
           <Check size={36} color="#0A0A0A" strokeWidth={2.5} />
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#F99F1B', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>Profile Registered ✓</div>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 400, color: '#F5F0E8', lineHeight: 1.15, letterSpacing: '-0.02em', marginBottom: 16 }}>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 600, color: '#F5F0E8', lineHeight: 1.15, letterSpacing: '-0.02em', marginBottom: 16 }}>
             Welcome to the Boardroom.
           </h2>
           <p style={{ color: '#7A7A8A', fontSize: 15, lineHeight: 1.7, marginBottom: 36 }}>
@@ -103,7 +103,7 @@ function SuccessCard({ assessmentUrl }: { assessmentUrl: string }) {
           <div className="flex items-center gap-3 mb-5">
             {[...Array(5)].map((_, i) => <Star key={i} size={14} fill="#F99F1B" color="#F99F1B" />)}
           </div>
-          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 400, color: '#F5F0E8', lineHeight: 1.2, marginBottom: 12, letterSpacing: '-0.02em' }}>
+          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: '#F5F0E8', lineHeight: 1.2, marginBottom: 12, letterSpacing: '-0.02em' }}>
             How Board Ready Are You?
           </h3>
           <p style={{ color: '#7A7A8A', fontSize: 14, lineHeight: 1.65, marginBottom: 24 }}>
@@ -113,7 +113,7 @@ function SuccessCard({ assessmentUrl }: { assessmentUrl: string }) {
             href={assessmentUrl || '#'}
             target="_blank"
             rel="noopener noreferrer"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'linear-gradient(135deg, #F99F1B, #FFD36A)', color: '#0A0A0A', fontSize: 13, fontWeight: 600, padding: '12px 22px', borderRadius: 9, border: 'none', cursor: 'pointer', boxShadow: '0 0 20px rgba(249,159,27,0.35)', textDecoration: 'none' }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#F99F1B', color: '#0A0A0A', fontSize: 13, fontWeight: 600, padding: '12px 22px', borderRadius: 9, border: 'none', cursor: 'pointer', boxShadow: '0 0 20px rgba(249,159,27,0.35)', textDecoration: 'none' }}
           >
             Take Assessment <ArrowRight size={14} />
           </a>
@@ -303,8 +303,8 @@ export function DirectorPage() {
           <div className="inline-flex items-center gap-2 mb-5 px-3 py-1.5 rounded-full" style={{ background: 'rgba(249,159,27,0.08)', border: '1px solid rgba(249,159,27,0.2)' }}>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#F99F1B', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Director Registration</span>
           </div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.8rem,4vw,3rem)', fontWeight: 400, color: '#F5F0E8', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
-            Join the <em style={{ fontStyle: 'italic', color: '#F99F1B' }}>Boardroom</em>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.8rem,4vw,3rem)', fontWeight: 600, color: '#F5F0E8', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
+            Join the <em style={{ color: '#F99F1B' }}>Boardroom</em>
           </h1>
           <p style={{ color: '#7A7A8A', fontSize: 14, lineHeight: 1.65, marginTop: 12, maxWidth: 460, margin: '12px auto 0' }}>
             Register your governance profile and become visible to future board opportunities across India's leading organizations.
@@ -319,7 +319,7 @@ export function DirectorPage() {
                 <div
                   style={{
                     width: 28, height: 28, borderRadius: '50%', border: i <= step ? 'none' : '1px solid rgba(255,255,255,0.15)',
-                    background: i < step ? '#F99F1B' : i === step ? 'linear-gradient(135deg,#F99F1B,#FFD36A)' : 'rgba(255,255,255,0.04)',
+                    background: i < step ? '#F99F1B' : i === step ? '#F99F1B' : 'rgba(255,255,255,0.04)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     boxShadow: i === step ? '0 0 12px rgba(249,159,27,0.4)' : 'none',
                     transition: 'all 0.3s',
@@ -350,7 +350,7 @@ export function DirectorPage() {
           >
             {step === 0 && (
               <div className="flex flex-col gap-5">
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 400, color: '#F5F0E8', marginBottom: 4 }}>Personal Information</h3>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: '#F5F0E8', marginBottom: 4 }}>Personal Information</h3>
                 <Field label="Full Name *" error={errors.name}>
                   <input value={form.name} onChange={(e) => update('name', e.target.value)} placeholder="e.g. Rajesh Kumar" style={inputStyle} />
                 </Field>
@@ -368,7 +368,7 @@ export function DirectorPage() {
 
             {step === 1 && (
               <div className="flex flex-col gap-5">
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 400, color: '#F5F0E8', marginBottom: 4 }}>Professional Details</h3>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: '#F5F0E8', marginBottom: 4 }}>Professional Details</h3>
                 <Field label="Current Designation *" error={errors.designation}>
                   <input value={form.designation} onChange={(e) => update('designation', e.target.value)} placeholder="e.g. Managing Director, CFO, President" style={inputStyle} />
                 </Field>
@@ -396,7 +396,7 @@ export function DirectorPage() {
 
             {step === 2 && (
               <div className="flex flex-col gap-5">
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 400, color: '#F5F0E8', marginBottom: 4 }}>Board Experience</h3>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: '#F5F0E8', marginBottom: 4 }}>Board Experience</h3>
                 <Field label="Previous Board Experience *" error={errors.boardExperience}>
                   <select value={form.boardExperience} onChange={(e) => update('boardExperience', e.target.value)} style={inputStyle}>
                     <option value="">Select</option>
@@ -431,7 +431,7 @@ export function DirectorPage() {
 
             {step === 3 && (
               <div className="flex flex-col gap-5">
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 400, color: '#F5F0E8', marginBottom: 4 }}>Preferences</h3>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: '#F5F0E8', marginBottom: 4 }}>Preferences</h3>
                 <Field label="Preferred Board Role *" error={errors.preferredRole}>
                   <select value={form.preferredRole} onChange={(e) => update('preferredRole', e.target.value)} style={inputStyle}>
                     <option value="">Select Role</option>
@@ -472,7 +472,7 @@ export function DirectorPage() {
               onClick={next}
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
-                background: 'linear-gradient(135deg, #F99F1B, #FFD36A)', color: '#0A0A0A',
+                background: '#F99F1B', color: '#0A0A0A',
                 fontSize: 13, fontWeight: 600, padding: '12px 24px', borderRadius: 9, border: 'none',
                 cursor: 'none', boxShadow: '0 0 20px rgba(249,159,27,0.3)', transition: 'box-shadow 0.2s',
               }}
@@ -487,7 +487,7 @@ export function DirectorPage() {
               disabled={submitting}
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
-                background: submitting ? 'rgba(249,159,27,0.5)' : 'linear-gradient(135deg, #F99F1B, #FFD36A)',
+                background: submitting ? 'rgba(249,159,27,0.5)' : '#F99F1B',
                 color: '#0A0A0A', fontSize: 13, fontWeight: 600, padding: '12px 28px',
                 borderRadius: 9, border: 'none', cursor: submitting ? 'not-allowed' : 'none',
                 boxShadow: '0 0 24px rgba(249,159,27,0.35)', transition: 'all 0.2s',

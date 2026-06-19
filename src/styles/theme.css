@@ -2,22 +2,22 @@
 
 :root {
   --font-size: 16px;
-  --font-display: 'Fraunces', Georgia, serif;
+  --font-display: 'Inter', system-ui, sans-serif;
   --font-body: 'Inter', system-ui, sans-serif;
   --font-mono: 'DM Mono', monospace;
 
-  --background: #0A0A0A;
-  --foreground: #F5F0E8;
-  --card: #111118;
-  --card-foreground: #F5F0E8;
-  --popover: #111118;
-  --popover-foreground: #F5F0E8;
+  --background: #08081C;
+  --foreground: #F0EDE8;
+  --card: #0E0E28;
+  --card-foreground: #F0EDE8;
+  --popover: #0E0E28;
+  --popover-foreground: #F0EDE8;
   --primary: #F99F1B;
-  --primary-foreground: #0A0A0A;
-  --secondary: #0F172A;
-  --secondary-foreground: #F5F0E8;
-  --muted: #1A1A24;
-  --muted-foreground: #7A7A8A;
+  --primary-foreground: #08081C;
+  --secondary: #191970;
+  --secondary-foreground: #F0EDE8;
+  --muted: #191940;
+  --muted-foreground: #8A8AA0;
   --accent: #F99F1B;
   --accent-foreground: #0A0A0A;
   --destructive: #d4183d;
@@ -45,12 +45,12 @@
   --sidebar-ring: rgba(249,159,27,0.4);
 
   --gold: #F99F1B;
-  --gold-light: #FFD36A;
-  --navy: #0F172A;
-  --glass: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-hover: rgba(255, 255, 255, 0.09);
-  --glow-gold: 0 0 40px rgba(249, 159, 27, 0.25);
+  --gold-light: #F99F1B;
+  --navy: #191970;
+  --glass: rgba(25, 25, 112, 0.08);
+  --glass-border: rgba(25, 25, 112, 0.3);
+  --glass-hover: rgba(25, 25, 112, 0.15);
+  --glow-gold: 0 0 40px rgba(249, 159, 27, 0.2);
 }
 
 .dark {

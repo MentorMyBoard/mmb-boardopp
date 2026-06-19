@@ -67,7 +67,7 @@ export function FinalCTA() {
       id="cta"
       className="relative overflow-hidden"
       style={{
-        background: 'linear-gradient(180deg, #0A0A0A 0%, #0F172A 50%, #0A0A0A 100%)',
+        background: 'linear-gradient(180deg, #08081C 0%, #191970 40%, #191970 60%, #08081C 100%)',
         padding: '140px 0',
       }}
     >
@@ -89,7 +89,7 @@ export function FinalCTA() {
             style={{
               fontFamily: 'var(--font-display)',
               fontSize: 'clamp(2rem,5vw,4.2rem)',
-              fontWeight: 400,
+              fontWeight: 600,
               color: '#F5F0E8',
               lineHeight: 1.12,
               letterSpacing: '-0.025em',
@@ -97,9 +97,9 @@ export function FinalCTA() {
             }}
           >
             Whether You Are{' '}
-            <em style={{ fontStyle: 'italic', color: '#F99F1B' }}>Building a Board</em>
+            <em style={{ color: '#F99F1B' }}>Building a Board</em>
             <br />
-            or <em style={{ fontStyle: 'italic', color: '#F99F1B' }}>Joining One</em>,
+            or <em style={{ color: '#F99F1B' }}>Joining One</em>,
             <br />
             Your Journey Begins Here.
           </h2>
@@ -111,7 +111,7 @@ export function FinalCTA() {
           <div className="flex flex-wrap items-center justify-center gap-4">
             <button
               style={{
-                background: 'linear-gradient(135deg, #F99F1B, #FFD36A)',
+                background: '#F99F1B',
                 color: '#0A0A0A',
                 fontSize: 14,
                 fontWeight: 700,

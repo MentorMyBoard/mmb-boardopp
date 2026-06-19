@@ -62,7 +62,7 @@ export function AdminDashboard() {
                 </div>
                 {stat.href !== '#' && <ArrowRight size={14} color="#4A4A5A" />}
               </div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 400, color: stat.color, lineHeight: 1, marginBottom: 6 }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 600, color: stat.color, lineHeight: 1, marginBottom: 6 }}>
                 {stat.value.toLocaleString()}
               </div>
               <div style={{ color: '#7A7A8A', fontSize: 12 }}>{stat.label}</div>

@@ -57,7 +57,7 @@ export function AdminContent() {
             <RotateCcw size={13} /> Reset Defaults
           </button>
           {activeTab !== 'password' && (
-            <button onClick={handleSave} style={{ display: 'flex', alignItems: 'center', gap: 8, background: saved ? 'rgba(95,207,138,0.15)' : 'linear-gradient(135deg,#F99F1B,#FFD36A)', border: saved ? '1px solid rgba(95,207,138,0.3)' : 'none', color: saved ? '#5FCF8A' : '#0A0A0A', fontSize: 13, fontWeight: 600, padding: '9px 18px', borderRadius: 9, cursor: 'pointer', transition: 'all 0.3s' }}>
+            <button onClick={handleSave} style={{ display: 'flex', alignItems: 'center', gap: 8, background: saved ? 'rgba(95,207,138,0.15)' : '#F99F1B', border: saved ? '1px solid rgba(95,207,138,0.3)' : 'none', color: saved ? '#5FCF8A' : '#0A0A0A', fontSize: 13, fontWeight: 600, padding: '9px 18px', borderRadius: 9, cursor: 'pointer', transition: 'all 0.3s' }}>
               {saved ? <><Check size={13} /> Saved!</> : <><Save size={13} /> Save Changes</>}
             </button>
           )}
@@ -136,7 +136,7 @@ export function AdminContent() {
             {pwError && <p style={{ color: '#FF6B6B', fontSize: 12 }}>{pwError}</p>}
             <button
               onClick={handlePasswordChange}
-              style={{ display: 'flex', alignItems: 'center', gap: 8, background: pwSaved ? 'rgba(95,207,138,0.15)' : 'linear-gradient(135deg,#F99F1B,#FFD36A)', border: pwSaved ? '1px solid rgba(95,207,138,0.3)' : 'none', color: pwSaved ? '#5FCF8A' : '#0A0A0A', fontSize: 13, fontWeight: 600, padding: '11px 20px', borderRadius: 9, cursor: 'pointer', width: 'fit-content' }}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, background: pwSaved ? 'rgba(95,207,138,0.15)' : '#F99F1B', border: pwSaved ? '1px solid rgba(95,207,138,0.3)' : 'none', color: pwSaved ? '#5FCF8A' : '#0A0A0A', fontSize: 13, fontWeight: 600, padding: '11px 20px', borderRadius: 9, cursor: 'pointer', width: 'fit-content' }}
             >
               {pwSaved ? <><Check size={13} /> Password Changed!</> : 'Update Password'}
             </button>

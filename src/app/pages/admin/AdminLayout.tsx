@@ -37,7 +37,7 @@ export function AdminLayout({ children, onLogout }: { children: React.ReactNode;
         {/* Logo */}
         <div style={{ padding: '20px 20px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 32, height: 32, background: 'linear-gradient(135deg, #F99F1B, #FFD36A)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 16px rgba(249,159,27,0.3)' }}>
+            <div style={{ width: 32, height: 32, background: '#F99F1B', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 16px rgba(249,159,27,0.3)' }}>
               <span style={{ fontFamily: 'var(--font-display)', color: '#0A0A0A', fontSize: 14, fontWeight: 700 }}>B</span>
             </div>
             <div>

@@ -43,8 +43,8 @@ export function AssessmentHub() {
           <div className="inline-flex items-center gap-2 mb-5 px-3 py-1.5 rounded-full" style={{ background: 'rgba(249,159,27,0.08)', border: '1px solid rgba(249,159,27,0.2)' }}>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#F99F1B', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Signature Feature</span>
           </div>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4.5vw,3.5rem)', fontWeight: 400, color: '#F5F0E8', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
-            The Assessment <em style={{ fontStyle: 'italic', color: '#F99F1B' }}>Hub</em>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4.5vw,3.5rem)', fontWeight: 600, color: '#F5F0E8', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
+            The Assessment <em style={{ color: '#F99F1B' }}>Hub</em>
           </h2>
           <p style={{ color: '#6A6A7A', fontSize: 16, lineHeight: 1.6, maxWidth: 520, margin: '16px auto 0' }}>
             Structured, science-backed assessments to measure and elevate governance capability.
@@ -88,7 +88,7 @@ export function AssessmentHub() {
                   <div
                     className="w-14 h-14 rounded-2xl flex items-center justify-center"
                     style={{
-                      background: hoveredIndex === i ? 'linear-gradient(135deg, #F99F1B, #FFD36A)' : 'rgba(249,159,27,0.1)',
+                      background: hoveredIndex === i ? '#F99F1B' : 'rgba(249,159,27,0.1)',
                       border: '1px solid rgba(249,159,27,0.2)',
                       transition: 'all 0.4s',
                       boxShadow: hoveredIndex === i ? '0 0 24px rgba(249,159,27,0.4)' : 'none',
@@ -117,7 +117,7 @@ export function AssessmentHub() {
                   <button
                     onClick={() => handleAssessmentClick(assessment.url)}
                     style={{
-                      background: hoveredIndex === i ? 'linear-gradient(135deg,#F99F1B,#FFD36A)' : 'transparent',
+                      background: hoveredIndex === i ? '#F99F1B' : 'transparent',
                       color: hoveredIndex === i ? '#0A0A0A' : '#F99F1B',
                       fontSize: 12,
                       fontWeight: 600,

@@ -44,7 +44,7 @@ function HomePage() {
   });
 
   return (
-    <div style={{ background: '#0A0A0A', minHeight: '100vh', overflowX: 'hidden' }}>
+    <div style={{ background: '#08081C', minHeight: '100vh', overflowX: 'hidden' }}>
       <CustomCursor />
       <ScrollProgress />
       <Navbar />

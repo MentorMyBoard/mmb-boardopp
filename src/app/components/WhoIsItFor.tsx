@@ -36,8 +36,8 @@ export function WhoIsItFor() {
           <div className="inline-flex items-center gap-2 mb-5 px-3 py-1.5 rounded-full" style={{ background: 'rgba(249,159,27,0.1)', border: '1px solid rgba(249,159,27,0.25)' }}>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#C47E0F', letterSpacing: '0.12em', textTransform: 'uppercase' }}>BoardOpp is designed for</span>
           </div>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4.5vw,3.5rem)', fontWeight: 400, color: '#1A1A2A', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
-            Who is <em style={{ fontStyle: 'italic', color: '#F99F1B' }}>BoardOpp</em> For?
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4.5vw,3.5rem)', fontWeight: 600, color: '#1A1A2A', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
+            Who is <em style={{ color: '#F99F1B' }}>BoardOpp</em> For?
           </h2>
         </motion.div>
 
@@ -70,7 +70,7 @@ export function WhoIsItFor() {
             />
             <div className="relative">
               <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #F99F1B, #FFD36A)', boxShadow: '0 4px 12px rgba(249,159,27,0.3)' }}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: '#F99F1B', boxShadow: '0 4px 12px rgba(249,159,27,0.3)' }}>
                   <Users size={18} color="#0A0A0A" />
                 </div>
                 <div>

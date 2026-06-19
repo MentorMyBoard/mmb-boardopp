@@ -23,7 +23,7 @@ export function AdminLogin({ onLogin }: { onLogin: () => void }) {
   };
 
   return (
-    <div className="admin-root" style={{ minHeight: '100vh', background: '#0A0A0A', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+    <div className="admin-root" style={{ minHeight: '100vh', background: '#08081C', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
       {/* Background */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 50% at 50% 20%, rgba(249,159,27,0.06) 0%, transparent 70%)' }} />
 
@@ -35,10 +35,10 @@ export function AdminLogin({ onLogin }: { onLogin: () => void }) {
       >
         {/* Logo */}
         <div className="flex flex-col items-center mb-10">
-          <div style={{ width: 48, height: 48, background: 'linear-gradient(135deg, #F99F1B, #FFD36A)', borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 28px rgba(249,159,27,0.4)', marginBottom: 16 }}>
+          <div style={{ width: 48, height: 48, background: '#F99F1B', borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 28px rgba(249,159,27,0.4)', marginBottom: 16 }}>
             <Lock size={22} color="#0A0A0A" />
           </div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 400, color: '#F5F0E8', letterSpacing: '-0.02em', marginBottom: 6 }}>Admin Panel</h1>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 600, color: '#F5F0E8', letterSpacing: '-0.02em', marginBottom: 6 }}>Admin Panel</h1>
           <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#5A5A6A', letterSpacing: '0.1em', textTransform: 'uppercase' }}>BoardOpp · MentorMyBoard</p>
         </div>
 
@@ -78,7 +78,7 @@ export function AdminLogin({ onLogin }: { onLogin: () => void }) {
               type="submit"
               disabled={loading || !password}
               style={{
-                width: '100%', background: loading || !password ? 'rgba(249,159,27,0.3)' : 'linear-gradient(135deg, #F99F1B, #FFD36A)',
+                width: '100%', background: loading || !password ? 'rgba(249,159,27,0.3)' : '#F99F1B',
                 color: '#0A0A0A', fontSize: 14, fontWeight: 600, padding: '13px 24px', borderRadius: 10, border: 'none',
                 cursor: loading || !password ? 'not-allowed' : 'pointer', boxShadow: '0 0 20px rgba(249,159,27,0.2)', transition: 'all 0.2s',
               }}

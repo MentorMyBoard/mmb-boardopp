@@ -59,8 +59,8 @@ export function TrustImpact() {
           <div className="inline-flex items-center gap-2 mb-5 px-3 py-1.5 rounded-full" style={{ background: 'rgba(249,159,27,0.1)', border: '1px solid rgba(249,159,27,0.25)' }}>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#C47E0F', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Our Impact</span>
           </div>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4.5vw,3.5rem)', fontWeight: 400, color: '#1A1A2A', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
-            Trust & <em style={{ fontStyle: 'italic', color: '#F99F1B' }}>Impact</em>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4.5vw,3.5rem)', fontWeight: 600, color: '#1A1A2A', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
+            Trust & <em style={{ color: '#F99F1B' }}>Impact</em>
           </h2>
           <p style={{ color: '#5A5A6A', fontSize: 16, lineHeight: 1.6, maxWidth: 460, margin: '16px auto 0' }}>
             Numbers that reflect a decade of governance leadership across India's corporate landscape.
@@ -98,14 +98,11 @@ export function TrustImpact() {
               <div
                 style={{
                   fontFamily: 'var(--font-display)',
-                  fontStyle: 'italic',
                   fontSize: 'clamp(2.5rem,5vw,3.5rem)',
-                  fontWeight: 400,
+                  fontWeight: 600,
                   lineHeight: 1,
                   marginBottom: 10,
-                  background: 'linear-gradient(135deg, #F99F1B, #FFD36A)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
+                  background: '#F99F1B',
                 }}
               >
                 <Counter value={item.value} suffix={item.suffix} inView={inView} />

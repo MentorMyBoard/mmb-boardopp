@@ -70,7 +70,7 @@ export function BoardOpportunities() {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section id="opportunities" ref={ref} style={{ background: '#0A0A0A', padding: '120px 0' }}>
+    <section id="opportunities" ref={ref} style={{ background: '#08081C', padding: '120px 0' }}>
       <div className="max-w-7xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -82,8 +82,8 @@ export function BoardOpportunities() {
             <div className="inline-flex items-center gap-2 mb-5 px-3 py-1.5 rounded-full" style={{ background: 'rgba(249,159,27,0.08)', border: '1px solid rgba(249,159,27,0.2)' }}>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#F99F1B', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Live opportunities</span>
             </div>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4.5vw,3.5rem)', fontWeight: 400, color: '#F5F0E8', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
-              Current Board <em style={{ fontStyle: 'italic', color: '#F99F1B' }}>Opportunities</em>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4.5vw,3.5rem)', fontWeight: 600, color: '#F5F0E8', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
+              Current Board <em style={{ color: '#F99F1B' }}>Opportunities</em>
             </h2>
           </div>
           <button

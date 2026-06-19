@@ -175,7 +175,7 @@ export function Navbar() {
           </button>
           <button
             onClick={() => navigate('/post-requirement')}
-            style={{ background: 'linear-gradient(135deg, #F99F1B, #FFD36A)', color: '#0A0A0A', fontSize: 13, fontWeight: 600, padding: '8px 18px', borderRadius: 8, border: 'none', boxShadow: '0 0 20px rgba(249,159,27,0.3)', cursor: 'none', transition: 'all 0.2s' }}
+            style={{ background: '#F99F1B', color: '#0A0A0A', fontSize: 13, fontWeight: 600, padding: '8px 18px', borderRadius: 8, border: 'none', boxShadow: '0 0 20px rgba(249,159,27,0.3)', cursor: 'none', transition: 'all 0.2s' }}
             onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 0 30px rgba(249,159,27,0.5)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 0 20px rgba(249,159,27,0.3)'; }}
           >
@@ -224,7 +224,7 @@ export function Navbar() {
             ))}
             <button
               onClick={() => navigate('/post-requirement')}
-              style={{ background: 'linear-gradient(135deg,#F99F1B,#FFD36A)', color: '#0A0A0A', fontSize: 14, fontWeight: 600, padding: '10px 16px', borderRadius: 8, textAlign: 'center', border: 'none', cursor: 'none' }}
+              style={{ background: '#F99F1B', color: '#0A0A0A', fontSize: 14, fontWeight: 600, padding: '10px 16px', borderRadius: 8, textAlign: 'center', border: 'none', cursor: 'none' }}
             >
               Post Requirement
             </button>

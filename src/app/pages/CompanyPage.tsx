@@ -41,7 +41,7 @@ function SuccessCard({ assessmentUrl }: { assessmentUrl: string }) {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
       className="flex items-center justify-center min-h-screen px-6"
-      style={{ background: 'radial-gradient(ellipse 90% 70% at 80% 20%, rgba(25,25,112,0.5) 0%, transparent 60%), radial-gradient(ellipse 70% 50% at 20% 80%, rgba(249,159,27,0.07) 0%, transparent 60%), #0A0A0A' }}
+      style={{ background: 'radial-gradient(ellipse 90% 70% at 80% 20%, rgba(25,25,112,0.5) 0%, transparent 60%), radial-gradient(ellipse 70% 50% at 20% 80%, rgba(249,159,27,0.07) 0%, transparent 60%), #08081C' }}
     >
       {/* Midnight blue ambient flare */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -63,14 +63,14 @@ function SuccessCard({ assessmentUrl }: { assessmentUrl: string }) {
           animate={{ scale: 1 }}
           transition={{ delay: 0.3, type: 'spring', stiffness: 300 }}
           className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8"
-          style={{ background: 'linear-gradient(135deg, #F99F1B, #FFD36A)', boxShadow: '0 0 40px rgba(249,159,27,0.4), 0 0 80px rgba(25,25,112,0.3)' }}
+          style={{ background: '#F99F1B', boxShadow: '0 0 40px rgba(249,159,27,0.4), 0 0 80px rgba(25,25,112,0.3)' }}
         >
           <Check size={36} color="#0A0A0A" strokeWidth={2.5} />
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#F99F1B', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>Requirement Received ✓</div>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 400, color: '#F5F0E8', lineHeight: 1.15, letterSpacing: '-0.02em', marginBottom: 16 }}>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 600, color: '#F5F0E8', lineHeight: 1.15, letterSpacing: '-0.02em', marginBottom: 16 }}>
             Building a Stronger Board.
           </h2>
           <p style={{ color: '#7A7A8A', fontSize: 15, lineHeight: 1.7, marginBottom: 36 }}>
@@ -252,8 +252,8 @@ export function CompanyPage() {
           <div className="inline-flex items-center gap-2 mb-5 px-3 py-1.5 rounded-full" style={{ background: 'rgba(249,159,27,0.08)', border: '1px solid rgba(249,159,27,0.2)' }}>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#F99F1B', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Company Registration</span>
           </div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.8rem,4vw,3rem)', fontWeight: 400, color: '#F5F0E8', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
-            Build a <em style={{ fontStyle: 'italic', color: '#F99F1B' }}>Stronger Board</em>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.8rem,4vw,3rem)', fontWeight: 600, color: '#F5F0E8', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
+            Build a <em style={{ color: '#F99F1B' }}>Stronger Board</em>
           </h1>
           <p style={{ color: '#7A7A8A', fontSize: 14, lineHeight: 1.65, marginTop: 12, maxWidth: 460, margin: '12px auto 0' }}>
             Register your board requirement and connect with India's top governance leaders, independent directors and advisory professionals.
@@ -268,7 +268,7 @@ export function CompanyPage() {
                 <div style={{
                   width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
                   border: i <= step ? 'none' : '1px solid rgba(255,255,255,0.15)',
-                  background: i < step ? '#F99F1B' : i === step ? 'linear-gradient(135deg,#F99F1B,#FFD36A)' : 'rgba(255,255,255,0.04)',
+                  background: i < step ? '#F99F1B' : i === step ? '#F99F1B' : 'rgba(255,255,255,0.04)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   boxShadow: i === step ? '0 0 12px rgba(249,159,27,0.4)' : 'none',
                   transition: 'all 0.3s',
@@ -297,7 +297,7 @@ export function CompanyPage() {
           >
             {step === 0 && (
               <div className="flex flex-col gap-5">
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 400, color: '#F5F0E8', marginBottom: 4 }}>Company Information</h3>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: '#F5F0E8', marginBottom: 4 }}>Company Information</h3>
                 <CField label="Company Name *" error={errors.companyName}>
                   <input value={form.companyName} onChange={(e) => update('companyName', e.target.value)} placeholder="e.g. Apex Financial Services Ltd." style={inputStyle} />
                 </CField>
@@ -321,7 +321,7 @@ export function CompanyPage() {
 
             {step === 1 && (
               <div className="flex flex-col gap-5">
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 400, color: '#F5F0E8', marginBottom: 4 }}>Contact Details</h3>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: '#F5F0E8', marginBottom: 4 }}>Contact Details</h3>
                 <CField label="Contact Person *" error={errors.contactPerson}>
                   <input value={form.contactPerson} onChange={(e) => update('contactPerson', e.target.value)} placeholder="Full name of primary contact" style={inputStyle} />
                 </CField>
@@ -339,7 +339,7 @@ export function CompanyPage() {
 
             {step === 2 && (
               <div className="flex flex-col gap-5">
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 400, color: '#F5F0E8', marginBottom: 4 }}>Board Requirement</h3>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: '#F5F0E8', marginBottom: 4 }}>Board Requirement</h3>
                 <CField label="Requirement Type(s) *" error={errors.requirementTypes as unknown as string}>
                   <p style={{ color: '#5A5A6A', fontSize: 12, marginBottom: 12 }}>Select all that apply to your governance requirement.</p>
                   <div className="flex flex-col gap-2">
@@ -369,7 +369,7 @@ export function CompanyPage() {
 
             {step === 3 && (
               <div className="flex flex-col gap-5">
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 400, color: '#F5F0E8', marginBottom: 4 }}>Additional Information</h3>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: '#F5F0E8', marginBottom: 4 }}>Additional Information</h3>
                 <CField label="Additional Requirement Details">
                   <textarea
                     value={form.additionalDetails}
@@ -410,7 +410,7 @@ export function CompanyPage() {
               onClick={next}
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
-                background: 'linear-gradient(135deg, #F99F1B, #FFD36A)', color: '#0A0A0A',
+                background: '#F99F1B', color: '#0A0A0A',
                 fontSize: 13, fontWeight: 600, padding: '12px 24px', borderRadius: 9, border: 'none',
                 cursor: 'none', boxShadow: '0 0 20px rgba(249,159,27,0.3)', transition: 'box-shadow 0.2s',
               }}
@@ -425,7 +425,7 @@ export function CompanyPage() {
               disabled={submitting}
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
-                background: submitting ? 'rgba(249,159,27,0.5)' : 'linear-gradient(135deg, #F99F1B, #FFD36A)',
+                background: submitting ? 'rgba(249,159,27,0.5)' : '#F99F1B',
                 color: '#0A0A0A', fontSize: 13, fontWeight: 600, padding: '12px 28px',
                 borderRadius: 9, border: 'none', cursor: submitting ? 'not-allowed' : 'none',
                 boxShadow: '0 0 24px rgba(249,159,27,0.35)', transition: 'all 0.2s',

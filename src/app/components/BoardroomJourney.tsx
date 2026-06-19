@@ -17,7 +17,7 @@ const steps = [
     subtitle: "Know your readiness",
     icon: BarChart,
     desc: "Take structured assessments to understand your boardroom readiness and identify areas for growth.",
-    color: "#FFD36A",
+    color: "#F99F1B",
   },
   {
     number: "03",
@@ -33,7 +33,7 @@ const steps = [
     subtitle: "Lead with impact",
     icon: Star,
     desc: "Continuously develop your board capabilities through MentorMyBoard programs and peer learning.",
-    color: "#FFD36A",
+    color: "#F99F1B",
   },
 ];
 
@@ -42,7 +42,7 @@ export function BoardroomJourney() {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section id="journey" ref={ref} style={{ background: '#0A0A0A', padding: '120px 0' }}>
+    <section id="journey" ref={ref} style={{ background: '#08081C', padding: '120px 0' }}>
       <div className="max-w-7xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -53,8 +53,8 @@ export function BoardroomJourney() {
           <div className="inline-flex items-center gap-2 mb-5 px-3 py-1.5 rounded-full" style={{ background: 'rgba(249,159,27,0.08)', border: '1px solid rgba(249,159,27,0.2)' }}>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#F99F1B', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Your governance path</span>
           </div>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4.5vw,3.5rem)', fontWeight: 400, color: '#F5F0E8', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
-            The <em style={{ fontStyle: 'italic', color: '#F99F1B' }}>Boardroom</em> Journey
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4.5vw,3.5rem)', fontWeight: 600, color: '#F5F0E8', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
+            The <em style={{ color: '#F99F1B' }}>Boardroom</em> Journey
           </h2>
           <p style={{ color: '#6A6A7A', fontSize: 16, lineHeight: 1.6, maxWidth: 480, margin: '16px auto 0' }}>
             A curated pathway from aspiration to governance excellence.
@@ -72,7 +72,7 @@ export function BoardroomJourney() {
             initial={{ width: 0, left: '12.5%' }}
             animate={inView ? { width: '75%' } : {}}
             transition={{ duration: 1.5, delay: 0.4, ease: 'easeInOut' }}
-            style={{ background: 'linear-gradient(90deg, #F99F1B, #FFD36A)' }}
+            style={{ background: '#F99F1B' }}
           />
 
           <div className="grid grid-cols-4 gap-8">
@@ -95,7 +95,7 @@ export function BoardroomJourney() {
                   <div
                     className="relative z-10 w-[52px] h-[52px] rounded-full flex items-center justify-center"
                     style={{
-                      background: 'linear-gradient(135deg, #F99F1B, #FFD36A)',
+                      background: '#F99F1B',
                       boxShadow: `0 0 24px rgba(249,159,27,0.4)`,
                     }}
                   >
@@ -146,7 +146,7 @@ export function BoardroomJourney() {
               transition={{ duration: 0.6, delay: 0.3 + i * 0.1 }}
               className="flex gap-6 pl-4"
             >
-              <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(135deg,#F99F1B,#FFD36A)' }}>
+              <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#F99F1B' }}>
                 <step.icon size={14} color="#0A0A0A" />
               </div>
               <div className="flex-1 pb-2">

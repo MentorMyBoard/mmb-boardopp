@@ -28,7 +28,7 @@ function AnimatedNumber({ target, suffix, inView }: { target: number; suffix: st
   }, [inView, target]);
 
   return (
-    <span style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', color: '#F99F1B' }}>
+    <span style={{ fontFamily: 'var(--font-display)', color: '#F99F1B' }}>
       {value}{suffix}
     </span>
   );
@@ -52,9 +52,9 @@ export function WhyGovernanceMatters() {
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#C47E0F', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Thought Leadership</span>
             </div>
 
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2.4rem,5vw,4rem)', fontWeight: 400, color: '#1A1A2A', lineHeight: 1.1, letterSpacing: '-0.025em', marginBottom: 28 }}>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2.4rem,5vw,4rem)', fontWeight: 600, color: '#1A1A2A', lineHeight: 1.1, letterSpacing: '-0.025em', marginBottom: 28 }}>
               Why Governance{' '}
-              <em style={{ fontStyle: 'italic', color: '#F99F1B' }}>Truly</em>{' '}
+              <em style={{ color: '#F99F1B' }}>Truly</em>{' '}
               Matters.
             </h2>
 
@@ -65,7 +65,7 @@ export function WhyGovernanceMatters() {
               <p style={{ color: '#4A4A5A', fontSize: 17, lineHeight: 1.75 }}>
                 Yet governance capability remains uneven. The gap between what boards need to be and what they are represents the single greatest opportunity in corporate leadership today.
               </p>
-              <p style={{ color: '#6A6A7A', fontSize: 15, lineHeight: 1.7, paddingLeft: 16, borderLeft: '2px solid rgba(249,159,27,0.5)', fontStyle: 'italic' }}>
+              <p style={{ color: '#6A6A7A', fontSize: 15, lineHeight: 1.7, paddingLeft: 16, borderLeft: '2px solid rgba(249,159,27,0.5)' }}>
                 "Governance is not about compliance. It is about culture, accountability, and the courage to ask the right questions."
               </p>
             </div>
@@ -73,7 +73,7 @@ export function WhyGovernanceMatters() {
             <div className="mt-10">
               <button
                 style={{
-                  background: 'linear-gradient(135deg, #F99F1B, #FFD36A)',
+                  background: '#F99F1B',
                   color: '#0A0A0A',
                   fontSize: 13,
                   fontWeight: 600,
