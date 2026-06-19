@@ -158,18 +158,17 @@ export function HeroSection() {
           transition={{ duration: 0.9, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
           style={{
             fontFamily: 'var(--font-display)',
-            fontSize: 'clamp(2.8rem, 7vw, 6.5rem)',
+            fontSize: 'clamp(2.2rem, 5vw, 5rem)',
             fontWeight: 600,
-            lineHeight: 1.06,
+            lineHeight: 1.1,
             color: '#F5F0E8',
             maxWidth: 900,
             letterSpacing: '-0.02em',
           }}
         >
-          The Future of{' '}
-          <span style={{ color: '#F99F1B' }}>
-            Board Opportunities
-          </span>
+          The Future of
+          <br />
+          <span style={{ color: '#F99F1B', whiteSpace: 'nowrap' }}>Board Opportunities</span>
           <br />Starts Here.
         </motion.h1>
 
