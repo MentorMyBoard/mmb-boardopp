@@ -134,47 +134,87 @@ function inferCategory(subject) {
   return 'Board News';
 }
 
-// Google Alerts emails have this structure in each article:
-//   <h2 dir="ltr"><a href="GOOGLE_REDIRECT">Headline</a></h2>
-//   <div dir="ltr"><a href="...">Source</a> &nbsp;·&nbsp; relative_date</div>
-//   <div dir="ltr">Description...</div>
-function parseGoogleAlertsHtml(html, subject, emailDate) {
+// Modern Google Alerts emails embed articles as JSON inside:
+//   <script data-scope="inboxmarkup" type="application/json">{ ... }</script>
+// The articles live at json.cards[].widgets[] where type === "LINK"
+// Each widget has: { type, title, description, url }
+// The title is "Headline - Source Name", url is a Google redirect to the real article.
+
+function splitTitleSource(title) {
+  const i = title.lastIndexOf(' - ');
+  if (i > 15) {
+    return { headline: title.slice(0, i).trim(), source: title.slice(i + 3).trim() };
+  }
+  return { headline: title.trim(), source: '' };
+}
+
+function parseInboxMarkupJson(html, subject, emailDate) {
+  const scriptMatch = html.match(/<script[^>]+data-scope="inboxmarkup"[^>]*>([\s\S]*?)<\/script>/i);
+  if (!scriptMatch) return null;
+
+  let data;
+  try { data = JSON.parse(scriptMatch[1]); }
+  catch (e) { console.error('[Gmail Parser] JSON parse error:', e.message); return null; }
+
   const articles = [];
-  // Split on h2 article blocks
+  for (const card of data.cards || []) {
+    for (const widget of card.widgets || []) {
+      if (widget.type !== 'LINK' || !widget.url || !widget.title) continue;
+
+      const articleUrl = decodeGoogleUrl(widget.url);
+      // Skip if Google URL decode failed (no url= param)
+      if (!articleUrl || articleUrl === widget.url) continue;
+
+      const { headline, source } = splitTitleSource(widget.title);
+      if (!headline || headline.length < 5) continue;
+
+      articles.push({
+        headline,
+        article_url: articleUrl,
+        source_name: source || 'News',
+        description: (widget.description || '').slice(0, 300),
+        published_date: emailDate,
+        category: inferCategory(subject),
+      });
+    }
+  }
+
+  console.log(`[Gmail Parser] JSON format — found ${articles.length} articles`);
+  return articles;
+}
+
+// Legacy fallback: older Google Alerts emails used <h2> tags with article links
+function parseLegacyHtml(html, subject, emailDate) {
+  const articles = [];
   const blocks = html.split(/<h2[^>]*>/i).slice(1);
 
   for (const block of blocks) {
-    // First <a> in block is the article link
     const linkMatch = block.match(/^[^<]*<a[^>]+href="([^"]+)"[^>]*>([^<]+)<\/a>/i);
     if (!linkMatch) continue;
 
-    const googleUrl = linkMatch[1];
     const headline = htmlEntities(linkMatch[2]);
     if (!headline || headline.length < 5) continue;
 
-    const articleUrl = decodeGoogleUrl(googleUrl);
-    // Skip if we couldn't decode a real URL
-    if (articleUrl === googleUrl && !articleUrl.includes('http')) continue;
+    const articleUrl = decodeGoogleUrl(linkMatch[1]);
+    if (!articleUrl || articleUrl === linkMatch[1]) continue;
 
-    // Source: first <a> in next div (before · separator)
     const sourceMatch = block.match(/<div[^>]*>(?:[^<]*)<a[^>]*>([^<]+)<\/a>\s*(?:&nbsp;)?\s*·/i);
     const sourceName = sourceMatch ? htmlEntities(sourceMatch[1]) : 'News';
 
-    // Description: second div text
     const descMatches = [...block.matchAll(/<div[^>]*dir="ltr"[^>]*>([^<]{15,})/gi)];
     const description = descMatches[1] ? htmlEntities(descMatches[1][1]).slice(0, 300) : '';
 
-    articles.push({
-      headline,
-      article_url: articleUrl,
-      source_name: sourceName,
-      description,
-      published_date: emailDate,
-      category: inferCategory(subject),
-    });
+    articles.push({ headline, article_url: articleUrl, source_name: sourceName, description, published_date: emailDate, category: inferCategory(subject) });
   }
 
+  console.log(`[Gmail Parser] Legacy HTML format — found ${articles.length} articles`);
   return articles;
+}
+
+function parseGoogleAlertsHtml(html, subject, emailDate) {
+  const jsonResult = parseInboxMarkupJson(html, subject, emailDate);
+  if (jsonResult !== null) return jsonResult;
+  return parseLegacyHtml(html, subject, emailDate);
 }
 
 // ── Main sync function ─────────────────────────────────────────────────────

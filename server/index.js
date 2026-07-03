@@ -285,6 +285,11 @@ app.delete('/api/admin/board-updates/:id', adminGuard, (req, res) => {
   res.json({ success: true });
 });
 
+app.post('/api/admin/board-updates/reset-sync-log', adminGuard, (req, res) => {
+  getDb().prepare('DELETE FROM gmail_sync_log').run();
+  res.json({ success: true, message: 'Sync log cleared — next sync will reprocess all emails' });
+});
+
 app.post('/api/admin/board-updates/sync', adminGuard, async (req, res) => {
   try {
     const result = await syncGmailAlerts(getDb());
