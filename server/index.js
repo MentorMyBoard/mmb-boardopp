@@ -295,6 +295,28 @@ app.post('/api/admin/board-updates/sync', adminGuard, async (req, res) => {
   }
 });
 
+app.get('/api/admin/board-updates/debug-email', adminGuard, async (req, res) => {
+  try {
+    const { getAccessToken, getLabelId, listMessages, getMessage, getEmailBody, getHeader } = require('./gmail-boards');
+    const token = await getAccessToken();
+    const labelName = process.env.GMAIL_LABEL_NAME || 'BoardUpdates';
+    const labelId = await getLabelId(token, labelName);
+    const messages = await listMessages(token, labelId, 3);
+    if (!messages.length) return res.json({ error: 'No messages found' });
+    const msg = await getMessage(token, messages[0].id);
+    const subject = getHeader(msg, 'subject');
+    const html = getEmailBody(msg);
+    res.json({
+      messageId: messages[0].id,
+      subject,
+      htmlLength: html?.length || 0,
+      htmlPreview: html?.slice(0, 3000) || null,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get('/api/admin/board-updates/sync-status', adminGuard, (req, res) => {
   try {
     const last = getDb().prepare('SELECT * FROM gmail_sync_log ORDER BY synced_at DESC LIMIT 1').get();

@@ -246,4 +246,4 @@ async function syncGmailAlerts(db) {
   return { processedEmails, newArticles, errors };
 }
 
-module.exports = { syncGmailAlerts };
+module.exports = { syncGmailAlerts, getAccessToken, getLabelId, listMessages, getMessage, getEmailBody, getHeader };
