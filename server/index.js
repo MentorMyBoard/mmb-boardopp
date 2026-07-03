@@ -5,6 +5,7 @@ const cors = require('cors');
 const { initDb, getDb } = require('./db');
 const { sendDirectorConfirmation, sendCompanyConfirmation } = require('./email');
 const { createZohoLead } = require('./zoho');
+const { syncGmailAlerts } = require('./gmail-boards');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -128,6 +129,36 @@ app.post('/api/company', async (req, res) => {
   }
 });
 
+// ── Board Updates — Public ─────────────────────────────────────────────────
+
+app.get('/api/board-updates', (req, res) => {
+  try {
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(50, parseInt(req.query.limit) || 12);
+    const offset = (page - 1) * limit;
+    const category = req.query.category && req.query.category !== 'all' ? req.query.category : null;
+    const search = req.query.search ? `%${req.query.search}%` : null;
+
+    let where = "WHERE status = 'approved'";
+    const params = [];
+    if (category) { where += ' AND category = ?'; params.push(category); }
+    if (search) { where += ' AND (headline LIKE ? OR source_name LIKE ? OR description LIKE ?)'; params.push(search, search, search); }
+
+    const total = getDb().prepare(`SELECT COUNT(*) as cnt FROM board_updates ${where}`).get(...params).cnt;
+    const rows = getDb().prepare(
+      `SELECT id, headline, source_name, article_url, published_date, description, image_url, category
+       FROM board_updates ${where}
+       ORDER BY published_date DESC, created_at DESC
+       LIMIT ? OFFSET ?`
+    ).all(...params, limit, offset);
+
+    res.json({ data: rows, total, page, limit, pages: Math.ceil(total / limit) });
+  } catch (err) {
+    console.error('[BoardUpdates] GET error:', err);
+    res.status(500).json({ error: 'Failed to fetch board updates' });
+  }
+});
+
 // ── Admin Routes (protected) ───────────────────────────────────────────────
 
 app.get('/api/admin/directors', adminGuard, (req, res) => {
@@ -164,6 +195,114 @@ app.delete('/api/admin/directors/:id', adminGuard, (req, res) => {
 app.delete('/api/admin/companies/:id', adminGuard, (req, res) => {
   getDb().prepare('DELETE FROM companies WHERE id = ?').run(req.params.id);
   res.json({ success: true });
+});
+
+// ── Board Updates — Admin ──────────────────────────────────────────────────
+
+app.get('/api/admin/board-updates', adminGuard, (req, res) => {
+  try {
+    const status = req.query.status && req.query.status !== 'all' ? req.query.status : null;
+    let where = status ? 'WHERE status = ?' : '';
+    const params = status ? [status] : [];
+    const rows = getDb().prepare(
+      `SELECT * FROM board_updates ${where} ORDER BY created_at DESC`
+    ).all(...params);
+    const counts = getDb().prepare(
+      "SELECT status, COUNT(*) as cnt FROM board_updates GROUP BY status"
+    ).all();
+    const countMap = Object.fromEntries(counts.map((r) => [r.status, r.cnt]));
+    res.json({ data: rows, counts: countMap });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch board updates' });
+  }
+});
+
+app.post('/api/admin/board-updates', adminGuard, (req, res) => {
+  try {
+    const { headline, source_name, article_url, published_date, description, image_url, category, status } = req.body;
+    if (!headline || !article_url) return res.status(400).json({ error: 'headline and article_url are required' });
+
+    const id = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    const now = new Date().toISOString();
+
+    getDb().prepare(`
+      INSERT INTO board_updates
+        (id, headline, source_name, article_url, published_date, description, image_url, category, status, gmail_message_id, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, '', ?, ?)
+    `).run(
+      id, headline, source_name || '', article_url,
+      published_date || now, description || '', image_url || '',
+      category || 'Board News', status || 'approved', now, now
+    );
+
+    const row = getDb().prepare('SELECT * FROM board_updates WHERE id = ?').get(id);
+    res.json({ success: true, data: row });
+  } catch (err) {
+    if (err.message.includes('UNIQUE')) return res.status(409).json({ error: 'Article with this URL already exists' });
+    res.status(500).json({ error: 'Failed to create article' });
+  }
+});
+
+app.put('/api/admin/board-updates/:id', adminGuard, (req, res) => {
+  try {
+    const { headline, source_name, article_url, published_date, description, image_url, category, status } = req.body;
+    const now = new Date().toISOString();
+
+    getDb().prepare(`
+      UPDATE board_updates
+      SET headline=?, source_name=?, article_url=?, published_date=?, description=?,
+          image_url=?, category=?, status=?, updated_at=?
+      WHERE id=?
+    `).run(
+      headline, source_name, article_url, published_date, description,
+      image_url, category, status, now, req.params.id
+    );
+
+    const row = getDb().prepare('SELECT * FROM board_updates WHERE id = ?').get(req.params.id);
+    if (!row) return res.status(404).json({ error: 'Not found' });
+    res.json({ success: true, data: row });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update article' });
+  }
+});
+
+app.patch('/api/admin/board-updates/:id/status', adminGuard, (req, res) => {
+  try {
+    const { status } = req.body;
+    if (!['pending', 'approved', 'hidden'].includes(status)) {
+      return res.status(400).json({ error: 'Invalid status' });
+    }
+    const now = new Date().toISOString();
+    getDb().prepare('UPDATE board_updates SET status=?, updated_at=? WHERE id=?').run(status, now, req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update status' });
+  }
+});
+
+app.delete('/api/admin/board-updates/:id', adminGuard, (req, res) => {
+  getDb().prepare('DELETE FROM board_updates WHERE id = ?').run(req.params.id);
+  res.json({ success: true });
+});
+
+app.post('/api/admin/board-updates/sync', adminGuard, async (req, res) => {
+  try {
+    const result = await syncGmailAlerts(getDb());
+    res.json({ success: true, ...result });
+  } catch (err) {
+    console.error('[Gmail Sync] Error:', err.message);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.get('/api/admin/board-updates/sync-status', adminGuard, (req, res) => {
+  try {
+    const last = getDb().prepare('SELECT * FROM gmail_sync_log ORDER BY synced_at DESC LIMIT 1').get();
+    const total = getDb().prepare('SELECT COUNT(*) as cnt FROM gmail_sync_log').get().cnt;
+    res.json({ lastSync: last || null, totalEmailsProcessed: total });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to get sync status' });
+  }
 });
 
 // ── Health check ───────────────────────────────────────────────────────────

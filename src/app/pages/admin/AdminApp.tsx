@@ -11,6 +11,7 @@ import { AdminPartners } from "./AdminPartners";
 import { AdminTestimonials } from "./AdminTestimonials";
 import { AdminCommunity } from "./AdminCommunity";
 import { AdminContent } from "./AdminContent";
+import { AdminBoardUpdates } from "./AdminBoardUpdates";
 
 export function AdminApp() {
   const [isAuth, setIsAuth] = useState(auth.isLoggedIn());
@@ -47,6 +48,7 @@ export function AdminApp() {
         <Route path="testimonials" element={<AdminTestimonials />} />
         <Route path="community" element={<AdminCommunity />} />
         <Route path="content" element={<AdminContent />} />
+        <Route path="board-updates" element={<AdminBoardUpdates />} />
       </Routes>
     </AdminLayout>
   );

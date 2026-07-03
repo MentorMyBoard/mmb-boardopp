@@ -10,6 +10,36 @@ function initDb() {
   db.pragma('foreign_keys = ON');
 
   db.exec(`
+    CREATE TABLE IF NOT EXISTS board_updates (
+      id               TEXT PRIMARY KEY,
+      headline         TEXT NOT NULL,
+      source_name      TEXT,
+      article_url      TEXT NOT NULL,
+      published_date   TEXT,
+      description      TEXT,
+      image_url        TEXT,
+      category         TEXT DEFAULT 'Board Appointment',
+      status           TEXT DEFAULT 'pending',
+      gmail_message_id TEXT,
+      created_at       TEXT NOT NULL,
+      updated_at       TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS gmail_sync_log (
+      id               TEXT PRIMARY KEY,
+      gmail_message_id TEXT UNIQUE NOT NULL,
+      subject          TEXT,
+      articles_parsed  INTEGER DEFAULT 0,
+      synced_at        TEXT NOT NULL
+    );
+
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_board_updates_url
+      ON board_updates(article_url);
+    CREATE INDEX IF NOT EXISTS idx_board_updates_status
+      ON board_updates(status);
+    CREATE INDEX IF NOT EXISTS idx_board_updates_date
+      ON board_updates(published_date);
+
     CREATE TABLE IF NOT EXISTS directors (
       id            TEXT PRIMARY KEY,
       name          TEXT NOT NULL,

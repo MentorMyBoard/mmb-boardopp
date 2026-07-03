@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router";
 import {
   LayoutDashboard, Users, Building2, BookOpen, Handshake,
-  Quote, UserSquare2, FileText, LogOut, Menu, X, ExternalLink,
+  Quote, UserSquare2, FileText, LogOut, Menu, X, ExternalLink, Newspaper,
 } from "lucide-react";
 
 const navItems = [
@@ -14,6 +14,7 @@ const navItems = [
   { label: 'Testimonials', href: '/admin/testimonials', icon: Quote },
   { label: 'Community', href: '/admin/community', icon: UserSquare2 },
   { label: 'Site Content', href: '/admin/content', icon: FileText },
+  { label: 'Board Updates', href: '/admin/board-updates', icon: Newspaper },
 ];
 
 export function AdminLayout({ children, onLogout }: { children: React.ReactNode; onLogout: () => void }) {

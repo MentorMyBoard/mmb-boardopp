@@ -17,6 +17,7 @@ const navLinks = [
   },
   { label: "Ecosystem", href: "#ecosystem" },
   { label: "Partners", href: "#partners" },
+  { label: "Board Updates", href: "/board-updates" },
   { label: "Explore MMB", href: "#mmb-ecosystem", highlight: true },
 ];
 

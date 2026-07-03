@@ -25,6 +25,7 @@ import { WhatsAppButton } from "./components/WhatsAppButton";
 import { DirectorPage } from "./pages/DirectorPage";
 import { CompanyPage } from "./pages/CompanyPage";
 import { AdminApp } from "./pages/admin/AdminApp";
+import { BoardUpdatesPage } from "./pages/BoardUpdatesPage";
 
 function PersistentWhatsApp() {
   const location = useLocation();
@@ -79,6 +80,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/join" element={<DirectorPage />} />
         <Route path="/post-requirement" element={<CompanyPage />} />
+        <Route path="/board-updates" element={<BoardUpdatesPage />} />
         <Route path="/admin/*" element={<AdminApp />} />
       </Routes>
     </BrowserRouter>
