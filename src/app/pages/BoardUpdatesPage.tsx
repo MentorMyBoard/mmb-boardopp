@@ -5,7 +5,7 @@ import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
 import { MmbEcosystem } from "../components/MmbEcosystem";
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
 const CATEGORIES = ['All', 'Board Appointment', 'Board Change', 'Governance', 'ESG', 'Board News'];
 

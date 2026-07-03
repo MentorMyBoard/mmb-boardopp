@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { RefreshCw, Plus, Check, EyeOff, Trash2, ExternalLink, AlertCircle, X, Edit2 } from "lucide-react";
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_BASE = import.meta.env.VITE_API_URL || '';
 const ADMIN_TOKEN = 'boardopp-admin-2024-secure';
 const ADMIN_HEADERS = { 'Content-Type': 'application/json', 'x-admin-token': ADMIN_TOKEN };
 
