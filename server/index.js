@@ -265,12 +265,34 @@ app.get('/api/admin/board-updates/analytics', adminGuard, (req, res) => {
   }
 });
 
-// ── Article content proxy (fetches external article server-side to avoid CORS + redirect)
+// ── Article content proxy — check DB first, paraphrase once, store permanently
 app.get('/api/board-updates/content', async (req, res) => {
   const url = req.query.url;
+  const id  = req.query.id;
+
+  // Serve from DB if already paraphrased
+  if (id) {
+    const row = getDb().prepare('SELECT paraphrased_content, image_url FROM board_updates WHERE id = ?').get(id);
+    if (row && row.paraphrased_content) {
+      return res.json({ content: row.paraphrased_content, ogImage: row.image_url || '', ogTitle: '', ogDescription: '' });
+    }
+  }
+
   if (!url) return res.status(400).json({ error: 'url parameter required' });
+
   try {
     const data = await fetchArticleContent(url);
+
+    // Save paraphrased content permanently so this article is never re-paraphrased
+    if (id && data.content) {
+      getDb().prepare('UPDATE board_updates SET paraphrased_content = ? WHERE id = ?').run(data.content, id);
+      if (data.ogImage) {
+        // Fill image_url if blank
+        getDb().prepare("UPDATE board_updates SET image_url = ? WHERE id = ? AND (image_url IS NULL OR image_url = '')").run(data.ogImage, id);
+      }
+      console.log(`[ContentFetch] Paraphrased & stored article ${id}`);
+    }
+
     res.json(data);
   } catch (err) {
     console.error('[ContentFetch] Error for', url, '—', err.message);

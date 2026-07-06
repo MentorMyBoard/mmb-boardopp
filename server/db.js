@@ -89,6 +89,14 @@ function initDb() {
     );
   `);
 
+  // Safe schema migrations — silently skip if column already exists
+  const migrations = [
+    'ALTER TABLE board_updates ADD COLUMN paraphrased_content TEXT',
+  ];
+  for (const sql of migrations) {
+    try { db.exec(sql); } catch {}
+  }
+
   console.log('[DB] Initialized at', DB_PATH);
   return db;
 }

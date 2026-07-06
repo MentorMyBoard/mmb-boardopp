@@ -167,7 +167,8 @@ function ArticleModal({ article, onClose }: { article: Article; onClose: () => v
   useEffect(() => {
     if (!article.article_url) { setLoading(false); return; }
     setLoading(true); setError(''); setContent(null);
-    fetch(`${API_BASE}/api/board-updates/content?url=${encodeURIComponent(article.article_url)}`)
+    const params = new URLSearchParams({ url: article.article_url, id: article.id });
+    fetch(`${API_BASE}/api/board-updates/content?${params}`)
       .then((r) => r.json())
       .then((d) => { if (d.error) setError('Content could not be loaded.'); else setContent(d); })
       .catch(() => setError('Failed to load. Please try again.'))
