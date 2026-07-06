@@ -89,9 +89,12 @@ function initDb() {
     );
   `);
 
-  // Safe schema migrations — silently skip if column already exists
+  // Safe schema migrations — silently skip if already applied
   const migrations = [
     'ALTER TABLE board_updates ADD COLUMN paraphrased_content TEXT',
+    // Allow multiple articles with empty/null URL — only enforce uniqueness for real URLs
+    'DROP INDEX IF EXISTS idx_board_updates_url',
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_board_updates_url ON board_updates(article_url) WHERE article_url != '' AND article_url IS NOT NULL",
   ];
   for (const sql of migrations) {
     try { db.exec(sql); } catch {}

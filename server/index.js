@@ -323,7 +323,7 @@ app.get('/api/admin/board-updates', adminGuard, (req, res) => {
 app.post('/api/admin/board-updates', adminGuard, (req, res) => {
   try {
     const { headline, source_name, article_url, published_date, description, image_url, category, status } = req.body;
-    if (!headline || !article_url) return res.status(400).json({ error: 'headline and article_url are required' });
+    if (!headline) return res.status(400).json({ error: 'headline is required' });
 
     const id = Math.random().toString(36).slice(2) + Date.now().toString(36);
     const now = new Date().toISOString();
@@ -365,7 +365,9 @@ app.put('/api/admin/board-updates/:id', adminGuard, (req, res) => {
     if (!row) return res.status(404).json({ error: 'Not found' });
     res.json({ success: true, data: row });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update article' });
+    console.error('[BoardUpdates] PUT error:', err.message);
+    if (err.message.includes('UNIQUE')) return res.status(409).json({ error: 'Another article already has this URL' });
+    res.status(500).json({ error: 'Failed to update article', detail: err.message });
   }
 });
 
