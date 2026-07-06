@@ -352,18 +352,17 @@ app.post('/api/admin/board-updates', adminGuard, (req, res) => {
 
 app.put('/api/admin/board-updates/:id', adminGuard, (req, res) => {
   try {
-    const { headline, source_name, article_url, published_date, description, category, status } = req.body;
+    const { headline, source_name, article_url, published_date, description, image_url, category, status } = req.body;
     const now = new Date().toISOString();
 
-    // image_url is excluded — it is set by the content fetch system and must not be overwritten by form edits
     getDb().prepare(`
       UPDATE board_updates
       SET headline=?, source_name=?, article_url=?, published_date=?, description=?,
-          category=?, status=?, updated_at=?
+          image_url=?, category=?, status=?, updated_at=?
       WHERE id=?
     `).run(
       headline, source_name, article_url, published_date, description,
-      category, status, now, req.params.id
+      image_url ?? '', category, status, now, req.params.id
     );
 
     const row = getDb().prepare('SELECT * FROM board_updates WHERE id = ?').get(req.params.id);

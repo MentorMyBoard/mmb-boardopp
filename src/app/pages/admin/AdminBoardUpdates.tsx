@@ -32,6 +32,7 @@ interface AddFormData {
   article_url: string;
   published_date: string;
   description: string;
+  image_url: string;
   category: string;
   status: string;
 }
@@ -39,7 +40,7 @@ interface AddFormData {
 const EMPTY_FORM: AddFormData = {
   headline: '', source_name: '', article_url: '',
   published_date: new Date().toISOString().slice(0, 10),
-  description: '', category: 'Board Appointment', status: 'approved',
+  description: '', image_url: '', category: 'Board Appointment', status: 'approved',
 };
 
 function fmtDate(iso: string) {
@@ -125,7 +126,8 @@ export function AdminBoardUpdates() {
     setForm({
       headline: a.headline, source_name: a.source_name, article_url: a.article_url,
       published_date: a.published_date?.slice(0, 10) || '',
-      description: a.description || '', category: a.category, status: a.status,
+      description: a.description || '', image_url: a.image_url || '',
+      category: a.category, status: a.status,
     });
     setEditArticle(a);
     setFormError('');
@@ -364,6 +366,7 @@ export function AdminBoardUpdates() {
                 { key: 'source_name', label: 'Source Name', placeholder: 'e.g. Economic Times' },
                 { key: 'published_date', label: 'Published Date', type: 'date' },
                 { key: 'description', label: 'Description', placeholder: 'Brief description…', multiline: true },
+                { key: 'image_url', label: 'Thumbnail Image URL', placeholder: 'https://… (optional — auto-set when article is opened)' },
               ].map(({ key, label, placeholder, multiline, type }) => (
                 <div key={key}>
                   <label style={{ display: 'block', color: '#8A8AA0', fontSize: 11, marginBottom: 5, letterSpacing: '0.05em', textTransform: 'uppercase' }}>{label}</label>
