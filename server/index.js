@@ -6,6 +6,7 @@ const { initDb, getDb } = require('./db');
 const { sendDirectorConfirmation, sendCompanyConfirmation } = require('./email');
 const { createZohoLead } = require('./zoho');
 const { syncGmailAlerts } = require('./gmail-boards');
+const { fetchArticleContent } = require('./content-fetch');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -195,6 +196,19 @@ app.delete('/api/admin/directors/:id', adminGuard, (req, res) => {
 app.delete('/api/admin/companies/:id', adminGuard, (req, res) => {
   getDb().prepare('DELETE FROM companies WHERE id = ?').run(req.params.id);
   res.json({ success: true });
+});
+
+// Article content proxy (fetches external article server-side to avoid CORS + redirect)
+app.get('/api/board-updates/content', async (req, res) => {
+  const url = req.query.url;
+  if (!url) return res.status(400).json({ error: 'url parameter required' });
+  try {
+    const data = await fetchArticleContent(url);
+    res.json(data);
+  } catch (err) {
+    console.error('[ContentFetch] Error for', url, '—', err.message);
+    res.status(500).json({ error: 'Could not fetch article content', detail: err.message });
+  }
 });
 
 // ── Board Updates — Admin ──────────────────────────────────────────────────
