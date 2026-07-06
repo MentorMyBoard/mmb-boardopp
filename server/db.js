@@ -10,6 +10,22 @@ function initDb() {
   db.pragma('foreign_keys = ON');
 
   db.exec(`
+    CREATE TABLE IF NOT EXISTS boardwatch_views (
+      id               TEXT PRIMARY KEY,
+      event_type       TEXT NOT NULL,
+      article_id       TEXT,
+      article_headline TEXT,
+      ip_hash          TEXT,
+      user_agent       TEXT,
+      referrer         TEXT,
+      session_id       TEXT,
+      created_at       TEXT NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_bwv_event  ON boardwatch_views(event_type);
+    CREATE INDEX IF NOT EXISTS idx_bwv_date   ON boardwatch_views(created_at);
+    CREATE INDEX IF NOT EXISTS idx_bwv_art    ON boardwatch_views(article_id);
+
     CREATE TABLE IF NOT EXISTS board_updates (
       id               TEXT PRIMARY KEY,
       headline         TEXT NOT NULL,
