@@ -67,19 +67,39 @@ function htmlToText(html) {
     .trim();
 }
 
+// JSON-LD structured data often has the full articleBody
+function extractJsonLd(html) {
+  const scripts = [...html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)];
+  for (const s of scripts) {
+    try {
+      const obj = JSON.parse(s[1]);
+      const candidates = Array.isArray(obj) ? obj : [obj, ...(obj['@graph'] || [])];
+      for (const c of candidates) {
+        if (c.articleBody && c.articleBody.length > 120) return c.articleBody.trim();
+        if (c.description && c.description.length > 200) return c.description.trim();
+      }
+    } catch {}
+  }
+  return null;
+}
+
 function extractContent(html) {
+  // 1. JSON-LD — most reliable when present
+  const ld = extractJsonLd(html);
+  if (ld) return ld.slice(0, 10000);
+
   // Remove boilerplate sections
   let h = html
     .replace(/<script[\s\S]*?<\/script>/gi, '')
     .replace(/<style[\s\S]*?<\/style>/gi, '')
-    .replace(/<(nav|header|footer|aside|form|figure|figcaption|noscript)[^>]*>[\s\S]*?<\/\1>/gi, '');
+    .replace(/<(nav|header|footer|aside|form|noscript|figure)[^>]*>[\s\S]*?<\/\1>/gi, '');
 
-  // Try article-body candidates in priority order
+  // 2. Structured HTML selectors in priority order
   const selectors = [
     /itemprop=["']articleBody["'][^>]*>([\s\S]{200,}?)<\/(?:div|section|article)>/i,
     /<article[^>]*>([\s\S]{200,}?)<\/article>/i,
-    /class=["'][^"']*(?:article[-_]body|article[-_]content|articleContent|story[-_]body|story[-_]content|post[-_]body|post[-_]content|entry[-_]content|content[-_]body|newsarticle[-_]body|articleText)[^"']*["'][^>]*>([\s\S]{200,}?)<\/(?:div|section|article)>/i,
-    /id=["'][^"']*(?:article[-_]body|articleBody|storyBody|contentBody)[^"']*["'][^>]*>([\s\S]{200,}?)<\/(?:div|section|article)>/i,
+    /class=["'][^"']*(?:article[-_]body|article[-_]content|articleContent|story[-_]body|story[-_]content|post[-_]body|post[-_]content|entry[-_]content|content[-_]body|newsarticle[-_]body|articleText|article-detail|news-detail|news[-_]content|full[-_]story)[^"']*["'][^>]*>([\s\S]{200,}?)<\/(?:div|section|article)>/i,
+    /id=["'][^"']*(?:article[-_]body|articleBody|storyBody|contentBody|main[-_]content|story[-_]content)[^"']*["'][^>]*>([\s\S]{200,}?)<\/(?:div|section|article)>/i,
     /<main[^>]*>([\s\S]{200,}?)<\/main>/i,
   ];
 
@@ -87,16 +107,16 @@ function extractContent(html) {
     const m = h.match(rx);
     if (m) {
       const text = htmlToText(m[1] || m[0]);
-      if (text.length > 150) return text.slice(0, 8000);
+      if (text.length > 150) return text.slice(0, 10000);
     }
   }
 
-  // Last resort: densest paragraph block
-  const paragraphs = [...h.matchAll(/<p[^>]*>([\s\S]+?)<\/p>/gi)]
-    .map((m) => decode(m[1].replace(/<[^>]+>/g, ' ').trim()))
-    .filter((t) => t.length > 60);
+  // 3. Collect all paragraphs — filter out nav/menu noise by min length
+  const paragraphs = [...h.matchAll(/<(?:p|td|li)[^>]*>([\s\S]+?)<\/(?:p|td|li)>/gi)]
+    .map((m) => decode(m[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()))
+    .filter((t) => t.length > 80 && !t.match(/^(home|menu|search|login|sign in|subscribe)/i));
 
-  if (paragraphs.length > 0) return paragraphs.join('\n\n').slice(0, 8000);
+  if (paragraphs.length > 0) return paragraphs.join('\n\n').slice(0, 10000);
   return '';
 }
 
