@@ -487,7 +487,7 @@ function AnalyticsTab() {
   const [fetchError, setFetchError] = useState('');
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/admin/boardwatch/analytics`, { headers: ADMIN_HEADERS })
+    fetch(`${API_BASE}/api/admin/board-updates/analytics`, { headers: ADMIN_HEADERS })
       .then(async (r) => {
         if (!r.ok) {
           const txt = await r.text().catch(() => `HTTP ${r.status}`);

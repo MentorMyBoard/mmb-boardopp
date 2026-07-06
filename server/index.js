@@ -1,4 +1,5 @@
 const path = require('path');
+const crypto = require('crypto');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
@@ -198,7 +199,72 @@ app.delete('/api/admin/companies/:id', adminGuard, (req, res) => {
   res.json({ success: true });
 });
 
-// Article content proxy (fetches external article server-side to avoid CORS + redirect)
+// ── BoardWatch Analytics Tracking ─────────────────────────────────────────
+
+function hashIp(ip) {
+  const salt = new Date().toISOString().slice(0, 10); // daily rotation — anonymous
+  return crypto.createHash('sha256').update(ip + salt + 'bw').digest('hex').slice(0, 16);
+}
+
+app.post('/api/board-updates/track', (req, res) => {
+  try {
+    const { event_type, article_id, article_headline, session_id, referrer } = req.body;
+    if (!['page_view', 'article_open'].includes(event_type)) {
+      return res.status(400).json({ error: 'Invalid event_type' });
+    }
+    const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket?.remoteAddress || '';
+    const id = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    getDb().prepare(`
+      INSERT INTO boardwatch_views (id, event_type, article_id, article_headline, ip_hash, user_agent, referrer, session_id, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(id, event_type, article_id || null, (article_headline || '').slice(0, 300), hashIp(ip), (req.headers['user-agent'] || '').slice(0, 200), (referrer || '').slice(0, 300), (session_id || '').slice(0, 40), new Date().toISOString());
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Tracking error' });
+  }
+});
+
+app.get('/api/admin/board-updates/analytics', adminGuard, (req, res) => {
+  try {
+    const db = getDb();
+    const now = new Date();
+    const todayStr  = now.toISOString().slice(0, 10);
+    const ago7d     = new Date(now - 7  * 86400000).toISOString();
+    const ago14d    = new Date(now - 14 * 86400000).toISOString();
+    const ago30d    = new Date(now - 30 * 86400000).toISOString();
+
+    const totalViews   = db.prepare("SELECT COUNT(*) c FROM boardwatch_views WHERE event_type='page_view'").get().c;
+    const totalOpens   = db.prepare("SELECT COUNT(*) c FROM boardwatch_views WHERE event_type='article_open'").get().c;
+    const todayViews   = db.prepare("SELECT COUNT(*) c FROM boardwatch_views WHERE event_type='page_view' AND created_at>=?").get(todayStr + 'T00:00:00').c;
+    const sessions7d   = db.prepare("SELECT COUNT(DISTINCT session_id) c FROM boardwatch_views WHERE created_at>=? AND session_id!=''").get(ago7d).c;
+    const totalSessions= db.prepare("SELECT COUNT(DISTINCT session_id) c FROM boardwatch_views WHERE session_id!=''").get().c;
+
+    const daily = db.prepare(`
+      SELECT substr(created_at,1,10) date,
+        SUM(CASE WHEN event_type='page_view'   THEN 1 ELSE 0 END) views,
+        SUM(CASE WHEN event_type='article_open' THEN 1 ELSE 0 END) opens
+      FROM boardwatch_views WHERE created_at>=? GROUP BY date ORDER BY date ASC
+    `).all(ago14d);
+
+    const topArticles = db.prepare(`
+      SELECT article_id, article_headline, COUNT(*) opens
+      FROM boardwatch_views
+      WHERE event_type='article_open' AND article_id IS NOT NULL
+      GROUP BY article_id ORDER BY opens DESC LIMIT 10
+    `).all();
+
+    const recent = db.prepare(`
+      SELECT event_type, article_headline, session_id, referrer, created_at
+      FROM boardwatch_views ORDER BY created_at DESC LIMIT 60
+    `).all();
+
+    res.json({ stats: { totalViews, totalOpens, todayViews, sessions7d, totalSessions }, daily, topArticles, recent });
+  } catch (err) {
+    res.status(500).json({ error: 'Analytics failed' });
+  }
+});
+
+// ── Article content proxy (fetches external article server-side to avoid CORS + redirect)
 app.get('/api/board-updates/content', async (req, res) => {
   const url = req.query.url;
   if (!url) return res.status(400).json({ error: 'url parameter required' });
