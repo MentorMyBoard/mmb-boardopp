@@ -278,7 +278,11 @@ app.get('/api/board-updates/content', async (req, res) => {
     }
   }
 
-  if (!url) return res.status(400).json({ error: 'url parameter required' });
+  if (!url) {
+    // id was provided but no stored paraphrase, and no URL to fetch — return empty gracefully
+    if (id) return res.json({ content: '', ogImage: '', ogTitle: '', ogDescription: '' });
+    return res.status(400).json({ error: 'url parameter required' });
+  }
 
   try {
     const data = await fetchArticleContent(url);
@@ -348,17 +352,18 @@ app.post('/api/admin/board-updates', adminGuard, (req, res) => {
 
 app.put('/api/admin/board-updates/:id', adminGuard, (req, res) => {
   try {
-    const { headline, source_name, article_url, published_date, description, image_url, category, status } = req.body;
+    const { headline, source_name, article_url, published_date, description, category, status } = req.body;
     const now = new Date().toISOString();
 
+    // image_url is excluded — it is set by the content fetch system and must not be overwritten by form edits
     getDb().prepare(`
       UPDATE board_updates
       SET headline=?, source_name=?, article_url=?, published_date=?, description=?,
-          image_url=?, category=?, status=?, updated_at=?
+          category=?, status=?, updated_at=?
       WHERE id=?
     `).run(
       headline, source_name, article_url, published_date, description,
-      image_url, category, status, now, req.params.id
+      category, status, now, req.params.id
     );
 
     const row = getDb().prepare('SELECT * FROM board_updates WHERE id = ?').get(req.params.id);
