@@ -489,11 +489,11 @@ function AnalyticsTab() {
   useEffect(() => {
     fetch(`${API_BASE}/api/admin/board-updates/analytics`, { headers: ADMIN_HEADERS })
       .then(async (r) => {
+        const json = await r.json().catch(() => null);
         if (!r.ok) {
-          const txt = await r.text().catch(() => `HTTP ${r.status}`);
-          throw new Error(`HTTP ${r.status}: ${txt.slice(0, 120)}`);
+          throw new Error(`HTTP ${r.status}: ${json?.detail || json?.error || r.statusText}`);
         }
-        return r.json();
+        return json;
       })
       .then(setData)
       .catch((e) => setFetchError(e.message || 'Unknown error'))

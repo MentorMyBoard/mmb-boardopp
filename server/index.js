@@ -260,7 +260,8 @@ app.get('/api/admin/board-updates/analytics', adminGuard, (req, res) => {
 
     res.json({ stats: { totalViews, totalOpens, todayViews, sessions7d, totalSessions }, daily, topArticles, recent });
   } catch (err) {
-    res.status(500).json({ error: 'Analytics failed' });
+    console.error('[Analytics] Error:', err.message);
+    res.status(500).json({ error: 'Analytics failed', detail: err.message });
   }
 });
 
