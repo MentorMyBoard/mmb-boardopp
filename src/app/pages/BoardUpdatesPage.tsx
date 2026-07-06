@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Search, RefreshCw, Globe2, Calendar, Globe, X, AlertCircle, Eye } from "lucide-react";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
 import { MmbEcosystem } from "../components/MmbEcosystem";
 import { CustomCursor } from "../components/CustomCursor";
+import { useSEO } from "../hooks/useSEO";
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
@@ -78,6 +79,76 @@ function CategoryBadge({ category }: { category: string }) {
   );
 }
 
+// ── SEO helpers ────────────────────────────────────────────────────────────
+
+const GOVERNANCE_BASE_KEYWORDS = [
+  'corporate governance news', 'board appointments', 'independent director appointments',
+  'ESG governance', 'board leadership changes', 'regulatory compliance news',
+  'MentorMyBoard BoardWatch', 'governance monitor', 'board director news',
+  'corporate board changes', 'governance transparency', 'SEBI board appointments',
+  'board committee news', 'board independence', 'director remuneration', 'audit committee',
+  'nomination committee', 'board diversity', 'governance best practices',
+];
+
+const STOP_WORDS = new Set(['Board', 'Director', 'Chief', 'Officer', 'Company', 'Group',
+  'With', 'From', 'That', 'This', 'Into', 'About', 'Over', 'After', 'Their', 'Will',
+  'Appoints', 'Joins', 'Names', 'Elects', 'News', 'Update', 'New', 'Says', 'Gets']);
+
+function buildSeoKeywords(articles: Article[]): string {
+  const categories = [...new Set(articles.map(a => a.category).filter(Boolean))];
+  const entityTerms = [...new Set(
+    articles.flatMap(a =>
+      a.headline.split(/[\s,;:–—\-]+/)
+        .filter(w => w.length >= 4 && /^[A-Z][a-z]/.test(w) && !STOP_WORDS.has(w))
+    )
+  )].slice(0, 30);
+  return [...GOVERNANCE_BASE_KEYWORDS, ...categories, ...entityTerms].join(', ');
+}
+
+function buildSeoDescription(articles: Article[]): string {
+  const cats = [...new Set(articles.map(a => a.category).filter(Boolean))].slice(0, 4).join(', ');
+  const base = 'BoardWatch by MentorMyBoard monitors global corporate governance news — board appointments, director changes, ESG policies, and regulatory updates.';
+  return cats ? `${base} Covering: ${cats}.` : base;
+}
+
+function buildSeoSchema(articles: Article[]): object[] {
+  return [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'MentorMyBoard',
+      url: 'https://boardopp.mentormyboard.com',
+      description: "India's premier board governance and director readiness platform.",
+      sameAs: ['https://mentormyboard.com'],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: 'BoardWatch — Global Governance Monitor',
+      description: buildSeoDescription(articles),
+      url: 'https://boardopp.mentormyboard.com/boardwatch',
+      publisher: { '@type': 'Organization', name: 'MentorMyBoard' },
+      keywords: GOVERNANCE_BASE_KEYWORDS.join(', '),
+      mainEntity: {
+        '@type': 'ItemList',
+        name: 'Latest Governance News',
+        itemListElement: articles.slice(0, 20).map((a, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          item: {
+            '@type': 'NewsArticle',
+            headline: a.headline,
+            datePublished: a.published_date,
+            description: a.description || a.headline,
+            articleSection: a.category,
+            publisher: { '@type': 'Organization', name: a.source_name || 'MentorMyBoard' },
+          },
+        })),
+      },
+    },
+  ];
+}
+
 // ── Article Modal ──────────────────────────────────────────────────────────
 
 function ArticleModal({ article, onClose }: { article: Article; onClose: () => void }) {
@@ -94,6 +165,7 @@ function ArticleModal({ article, onClose }: { article: Article; onClose: () => v
   }, [onClose]);
 
   useEffect(() => {
+    if (!article.article_url) { setLoading(false); return; }
     setLoading(true); setError(''); setContent(null);
     fetch(`${API_BASE}/api/board-updates/content?url=${encodeURIComponent(article.article_url)}`)
       .then((r) => r.json())
@@ -145,7 +217,8 @@ function ArticleModal({ article, onClose }: { article: Article; onClose: () => v
           {loading ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: '48px 0', color: '#8A8AA0' }}>
               <RefreshCw size={22} style={{ animation: 'spin 1s linear infinite', color: '#191970' }} />
-              <span style={{ fontSize: 13 }}>Loading article…</span>
+              <span style={{ fontSize: 13 }}>Preparing article…</span>
+              <span style={{ fontSize: 11, color: '#B0B0C8' }}>Paraphrasing for independent use</span>
             </div>
           ) : error ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '40px 0', textAlign: 'center' }}>
@@ -162,9 +235,13 @@ function ArticleModal({ article, onClose }: { article: Article; onClose: () => v
 
         <div style={{ padding: '14px 36px', background: '#F4F1EC', borderTop: '1px solid rgba(25,25,112,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#9A9AB0', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Source: {article.source_name}</span>
-          <span onClick={() => window.open(article.article_url, '_blank', 'noopener,noreferrer')} style={{ fontSize: 11, color: cat.text, opacity: 0.5, cursor: 'none', textDecoration: 'underline', userSelect: 'none' }}>
-            Original ↗
-          </span>
+          {article.article_url ? (
+            <span onClick={() => window.open(article.article_url, '_blank', 'noopener,noreferrer')} style={{ fontSize: 11, color: cat.text, opacity: 0.5, cursor: 'none', textDecoration: 'underline', userSelect: 'none' }}>
+              Original ↗
+            </span>
+          ) : (
+            <span style={{ fontSize: 11, color: '#B0B0C8', fontFamily: 'var(--font-mono)' }}>MentorMyBoard Curated</span>
+          )}
         </div>
       </motion.div>
     </motion.div>
@@ -230,6 +307,20 @@ export function BoardUpdatesPage() {
   const [searchInput, setSearchInput] = useState('');
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const LIMIT = 12;
+
+  // Dynamic SEO — updates every time new articles load
+  const seoKeywords = useMemo(() => buildSeoKeywords(articles), [articles]);
+  const seoDescription = useMemo(() => buildSeoDescription(articles), [articles]);
+  const seoSchema = useMemo(() => buildSeoSchema(articles), [articles]);
+
+  useSEO({
+    title: 'BoardWatch — Global Governance Monitor | MentorMyBoard',
+    description: seoDescription,
+    keywords: seoKeywords,
+    canonical: 'https://boardopp.mentormyboard.com/boardwatch',
+    ogType: 'website',
+    schema: seoSchema,
+  });
 
   // Track page view once on mount
   useEffect(() => { track('page_view'); }, []);

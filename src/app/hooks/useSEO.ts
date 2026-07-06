@@ -107,5 +107,5 @@ export function useSEO(config: SEOConfig) {
       // Clean up schemas when navigating away
       document.querySelectorAll('script[data-seo="true"]').forEach((el) => el.remove());
     };
-  }, [config.title, config.description, config.canonical]);
+  }, [config.title, config.description, config.canonical, config.keywords, config.schema]);
 }

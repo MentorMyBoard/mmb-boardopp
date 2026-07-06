@@ -4,7 +4,7 @@ const { URL } = require('url');
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 
-// Simple in-memory cache (30 min TTL)
+// Simple in-memory cache (30 min TTL) — stores already-paraphrased content
 const cache = new Map();
 const CACHE_TTL = 30 * 60 * 1000;
 
@@ -67,7 +67,6 @@ function htmlToText(html) {
     .trim();
 }
 
-// JSON-LD structured data often has the full articleBody
 function extractJsonLd(html) {
   const scripts = [...html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)];
   for (const s of scripts) {
@@ -84,17 +83,14 @@ function extractJsonLd(html) {
 }
 
 function extractContent(html) {
-  // 1. JSON-LD — most reliable when present
   const ld = extractJsonLd(html);
   if (ld) return ld.slice(0, 10000);
 
-  // Remove boilerplate sections
   let h = html
     .replace(/<script[\s\S]*?<\/script>/gi, '')
     .replace(/<style[\s\S]*?<\/style>/gi, '')
     .replace(/<(nav|header|footer|aside|form|noscript|figure)[^>]*>[\s\S]*?<\/\1>/gi, '');
 
-  // 2. Structured HTML selectors in priority order
   const selectors = [
     /itemprop=["']articleBody["'][^>]*>([\s\S]{200,}?)<\/(?:div|section|article)>/i,
     /<article[^>]*>([\s\S]{200,}?)<\/article>/i,
@@ -111,7 +107,6 @@ function extractContent(html) {
     }
   }
 
-  // 3. Collect all paragraphs — filter out nav/menu noise by min length
   const paragraphs = [...h.matchAll(/<(?:p|td|li)[^>]*>([\s\S]+?)<\/(?:p|td|li)>/gi)]
     .map((m) => decode(m[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()))
     .filter((t) => t.length > 80 && !t.match(/^(home|menu|search|login|sign in|subscribe)/i));
@@ -120,12 +115,63 @@ function extractContent(html) {
   return '';
 }
 
+// ── AI Paraphrase via Claude Haiku ────────────────────────────────────────
+
+function paraphraseContent(text) {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey || !text || text.length < 100) return Promise.resolve(text);
+
+  const prompt = `You are an editorial writer for a corporate governance news platform. Rewrite the following article content entirely in your own words. Preserve all factual details — names, numbers, dates, company names, and events — but use completely different sentence structures and phrasing. The output should read as original, professional journalism for board directors and governance professionals. Do not add any opinions, analysis, or information not in the source. Output only the rewritten article, no preamble or commentary.
+
+Article to rewrite:
+${text.slice(0, 6000)}`;
+
+  const body = JSON.stringify({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 1800,
+    messages: [{ role: 'user', content: prompt }],
+  });
+
+  return new Promise((resolve) => {
+    const options = {
+      hostname: 'api.anthropic.com',
+      path: '/v1/messages',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'Content-Length': Buffer.byteLength(body),
+      },
+    };
+
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', (chunk) => { data += chunk; });
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(data);
+          const result = json.content?.[0]?.text;
+          resolve(result && result.length > 80 ? result : text);
+        } catch {
+          resolve(text);
+        }
+      });
+    });
+
+    req.on('error', () => resolve(text));
+    req.setTimeout(28000, () => { req.destroy(); resolve(text); });
+    req.write(body);
+    req.end();
+  });
+}
+
+// ── Main export ───────────────────────────────────────────────────────────
+
 async function fetchArticleContent(url) {
-  // Validate URL
   const parsed = new URL(url);
   if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('Invalid URL protocol');
 
-  // Cache check
   const cached = cache.get(url);
   if (cached && Date.now() - cached.ts < CACHE_TTL) return cached.data;
 
@@ -134,7 +180,10 @@ async function fetchArticleContent(url) {
   const ogImage    = meta(html, 'og:image', 'twitter:image');
   const ogDesc     = meta(html, 'og:description', 'twitter:description', 'description');
   const ogTitle    = meta(html, 'og:title', 'twitter:title');
-  const content    = extractContent(html);
+  const rawContent = extractContent(html);
+
+  // Paraphrase the article content to avoid verbatim reproduction
+  const content = await paraphraseContent(rawContent);
 
   const data = { ogTitle, ogDescription: ogDesc, ogImage, content };
   cache.set(url, { data, ts: Date.now() });

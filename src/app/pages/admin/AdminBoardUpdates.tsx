@@ -133,8 +133,8 @@ export function AdminBoardUpdates() {
   };
 
   const handleSave = async () => {
-    if (!form.headline.trim() || !form.article_url.trim()) {
-      setFormError('Headline and article URL are required.');
+    if (!form.headline.trim()) {
+      setFormError('Headline is required.');
       return;
     }
     setSaving(true);
@@ -360,7 +360,7 @@ export function AdminBoardUpdates() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {[
                 { key: 'headline', label: 'Headline *', placeholder: 'Article headline', multiline: true },
-                { key: 'article_url', label: 'Article URL *', placeholder: 'https://…' },
+                { key: 'article_url', label: 'Article URL', placeholder: 'https://… (optional)' },
                 { key: 'source_name', label: 'Source Name', placeholder: 'e.g. Economic Times' },
                 { key: 'published_date', label: 'Published Date', type: 'date' },
                 { key: 'description', label: 'Description', placeholder: 'Brief description…', multiline: true },
