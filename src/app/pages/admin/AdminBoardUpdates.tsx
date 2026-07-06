@@ -484,17 +484,28 @@ function DailyChart({ daily }: { daily: AnalyticsData['daily'] }) {
 function AnalyticsTab() {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState('');
 
   useEffect(() => {
     fetch(`${API_BASE}/api/admin/boardwatch/analytics`, { headers: ADMIN_HEADERS })
-      .then((r) => r.json())
+      .then(async (r) => {
+        if (!r.ok) {
+          const txt = await r.text().catch(() => `HTTP ${r.status}`);
+          throw new Error(`HTTP ${r.status}: ${txt.slice(0, 120)}`);
+        }
+        return r.json();
+      })
       .then(setData)
-      .catch(() => {})
+      .catch((e) => setFetchError(e.message || 'Unknown error'))
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <div style={{ color: '#6A6A7A', fontSize: 14, padding: '48px 0', textAlign: 'center' }}><RefreshCw size={18} style={{ animation: 'spin 1s linear infinite', marginBottom: 8 }} /><br />Loading analytics…</div>;
-  if (!data) return <div style={{ color: '#FF6B6B', fontSize: 13, padding: '32px 0' }}>Failed to load analytics.</div>;
+  if (fetchError || !data) return (
+    <div style={{ color: '#FF6B6B', fontSize: 13, padding: '32px 0' }}>
+      Failed to load analytics.{fetchError && <><br /><span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, opacity: 0.7 }}>{fetchError}</span></>}
+    </div>
+  );
 
   return (
     <div>
