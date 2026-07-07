@@ -17,7 +17,7 @@ const navLinks = [
   },
   { label: "Ecosystem", href: "#ecosystem" },
   { label: "Partners", href: "#partners" },
-  { label: "Board Updates", href: "/board-updates" },
+  { label: "BoardWatch", href: "/boardwatch" },
   { label: "Explore MMB", href: "#mmb-ecosystem", highlight: true },
 ];
 
@@ -49,7 +49,12 @@ export function Navbar() {
       navigate(href);
     } else if (href.startsWith('#')) {
       const el = document.querySelector(href);
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        // Section not on current page — go to home and let browser scroll to hash
+        window.location.href = '/' + href;
+      }
     }
     setMenuOpen(false);
     setActiveDropdown(null);
