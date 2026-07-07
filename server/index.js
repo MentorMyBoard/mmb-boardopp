@@ -355,6 +355,20 @@ app.put('/api/admin/board-updates/:id', adminGuard, (req, res) => {
     const { headline, source_name, article_url, published_date, description, image_url, category, status } = req.body;
     const now = new Date().toISOString();
 
+    // If URL is being removed and content was never stored, fetch + save it in the background
+    // so the article keeps its full content and thumbnail even after the URL is cleared
+    if (!article_url) {
+      const cur = getDb().prepare('SELECT article_url, paraphrased_content FROM board_updates WHERE id = ?').get(req.params.id);
+      if (cur?.article_url && !cur?.paraphrased_content) {
+        fetchArticleContent(cur.article_url)
+          .then((data) => {
+            if (data.content) getDb().prepare('UPDATE board_updates SET paraphrased_content = ? WHERE id = ?').run(data.content, req.params.id);
+            if (data.ogImage) getDb().prepare("UPDATE board_updates SET image_url = ? WHERE id = ? AND (image_url IS NULL OR image_url = '')").run(data.ogImage, req.params.id);
+          })
+          .catch((e) => console.error('[BoardUpdates] Background content store failed:', e.message));
+      }
+    }
+
     getDb().prepare(`
       UPDATE board_updates
       SET headline=?, source_name=?, article_url=?, published_date=?, description=?,
