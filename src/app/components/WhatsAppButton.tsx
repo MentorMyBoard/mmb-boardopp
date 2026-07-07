@@ -8,7 +8,7 @@ export function WhatsAppButton() {
 
   return (
     <motion.div
-      style={{ position: 'fixed', bottom: 28, right: 28, zIndex: 9000 }}
+      style={{ position: 'fixed', bottom: 28, left: 28, zIndex: 9000 }}
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ delay: 1.5, type: 'spring', stiffness: 300, damping: 20 }}
@@ -17,13 +17,13 @@ export function WhatsAppButton() {
       <AnimatePresence>
         {hovered && (
           <motion.div
-            initial={{ opacity: 0, x: 10, scale: 0.9 }}
+            initial={{ opacity: 0, x: -10, scale: 0.9 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: 10, scale: 0.9 }}
+            exit={{ opacity: 0, x: -10, scale: 0.9 }}
             transition={{ duration: 0.18 }}
             style={{
               position: 'absolute',
-              right: 62,
+              left: 62,
               top: '50%',
               transform: 'translateY(-50%)',
               background: 'linear-gradient(135deg, #191970, #0d0d50)',
@@ -41,12 +41,12 @@ export function WhatsAppButton() {
           >
             Chat with us on WhatsApp
             <div style={{
-              position: 'absolute', right: -5, top: '50%',
+              position: 'absolute', left: -5, top: '50%',
               transform: 'translateY(-50%) rotate(45deg)',
               width: 10, height: 10,
               background: '#191970',
               border: '1px solid rgba(255,255,255,0.15)',
-              borderLeft: 'none', borderBottom: 'none',
+              borderRight: 'none', borderTop: 'none',
             }} />
           </motion.div>
         )}
