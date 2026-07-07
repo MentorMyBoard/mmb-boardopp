@@ -80,6 +80,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/join" element={<DirectorPage />} />
         <Route path="/post-requirement" element={<CompanyPage />} />
+        <Route path="/boardwatch" element={<BoardUpdatesPage />} />
         <Route path="/board-updates" element={<BoardUpdatesPage />} />
         <Route path="/admin/*" element={<AdminApp />} />
       </Routes>
