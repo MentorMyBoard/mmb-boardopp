@@ -165,16 +165,15 @@ function ArticleModal({ article, onClose }: { article: Article; onClose: () => v
   }, [onClose]);
 
   useEffect(() => {
+    if (!article.article_url) { setLoading(false); return; }
     setLoading(true); setError(''); setContent(null);
-    const params = new URLSearchParams({ id: article.id });
-    if (article.article_url) params.set('url', article.article_url);
+    const params = new URLSearchParams({ id: article.id, url: article.article_url });
     fetch(`${API_BASE}/api/board-updates/content?${params}`)
       .then((r) => r.json())
       .then((d) => {
         if (d.content) setContent(d);
-        // no stored content — falls back to article.description silently
       })
-      .catch(() => { if (article.article_url) setError('Failed to load. Please try again.'); })
+      .catch(() => setError('Failed to load. Please try again.'))
       .finally(() => setLoading(false));
   }, [article.id, article.article_url]);
 
