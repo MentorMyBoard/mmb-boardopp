@@ -22,6 +22,7 @@ import { Footer } from "./components/Footer";
 import { MmbEcosystem } from "./components/MmbEcosystem";
 import { CookieBanner } from "./components/CookieBanner";
 import { WhatsAppButton } from "./components/WhatsAppButton";
+import { PromoPopups } from "./components/PromoPopups";
 import { DirectorPage } from "./pages/DirectorPage";
 import { CompanyPage } from "./pages/CompanyPage";
 import { AdminApp } from "./pages/admin/AdminApp";
@@ -76,6 +77,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <PersistentWhatsApp />
+      <PromoPopups />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/join" element={<DirectorPage />} />

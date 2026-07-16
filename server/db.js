@@ -90,6 +90,23 @@ function initDb() {
   `);
 
   // Safe schema migrations — silently skip if already applied
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS promotional_popups (
+      id           TEXT PRIMARY KEY,
+      title        TEXT NOT NULL,
+      image_url    TEXT NOT NULL,
+      orientation  TEXT DEFAULT 'landscape',
+      image_width  INTEGER DEFAULT 400,
+      image_height INTEGER DEFAULT 300,
+      button_text  TEXT DEFAULT '',
+      button_url   TEXT DEFAULT '',
+      position     TEXT DEFAULT 'right-bottom',
+      is_active    INTEGER DEFAULT 1,
+      created_at   TEXT NOT NULL,
+      updated_at   TEXT NOT NULL
+    );
+  `);
+
   const migrations = [
     'ALTER TABLE board_updates ADD COLUMN paraphrased_content TEXT',
     // Allow multiple articles with empty/null URL — only enforce uniqueness for real URLs

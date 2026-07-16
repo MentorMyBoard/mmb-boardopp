@@ -455,6 +455,64 @@ app.get('/api/admin/board-updates/sync-status', adminGuard, (req, res) => {
   }
 });
 
+// ── Promotional Popups ─────────────────────────────────────────────────────
+
+app.get('/api/popups', (_req, res) => {
+  try {
+    const rows = getDb().prepare('SELECT * FROM promotional_popups WHERE is_active = 1 ORDER BY created_at DESC').all();
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/admin/popups', adminGuard, (_req, res) => {
+  try {
+    const rows = getDb().prepare('SELECT * FROM promotional_popups ORDER BY created_at DESC').all();
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/admin/popups', adminGuard, (req, res) => {
+  try {
+    const { title, image_url, orientation, image_width, image_height, button_text, button_url, position, is_active } = req.body;
+    if (!title || !image_url) return res.status(400).json({ error: 'title and image_url are required' });
+    const id = uid();
+    const now = new Date().toISOString();
+    getDb().prepare(`
+      INSERT INTO promotional_popups (id, title, image_url, orientation, image_width, image_height, button_text, button_url, position, is_active, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(id, title, image_url, orientation || 'landscape', image_width || 400, image_height || 300, button_text || '', button_url || '', position || 'right-bottom', is_active !== false ? 1 : 0, now, now);
+    res.json({ success: true, id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/admin/popups/:id', adminGuard, (req, res) => {
+  try {
+    const { title, image_url, orientation, image_width, image_height, button_text, button_url, position, is_active } = req.body;
+    const now = new Date().toISOString();
+    getDb().prepare(`
+      UPDATE promotional_popups SET title=?, image_url=?, orientation=?, image_width=?, image_height=?, button_text=?, button_url=?, position=?, is_active=?, updated_at=? WHERE id=?
+    `).run(title, image_url, orientation || 'landscape', image_width || 400, image_height || 300, button_text || '', button_url || '', position || 'right-bottom', is_active ? 1 : 0, now, req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/admin/popups/:id', adminGuard, (req, res) => {
+  try {
+    getDb().prepare('DELETE FROM promotional_popups WHERE id = ?').run(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ── Health check ───────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', env: process.env.NODE_ENV, timestamp: new Date().toISOString() });
