@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Plus, Pencil, Trash2, Eye, EyeOff, X, Upload, ImageIcon } from "lucide-react";
-import { auth } from "../../utils/store";
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
+const ADMIN_TOKEN = 'boardopp-admin-2024-secure';
 
 interface Popup {
   id: string;
@@ -34,7 +34,7 @@ const EMPTY = {
 };
 
 function headers() {
-  return { 'Content-Type': 'application/json', 'x-admin-token': auth.getToken() };
+  return { 'Content-Type': 'application/json', 'x-admin-token': ADMIN_TOKEN };
 }
 
 async function resizeAndEncode(file: File): Promise<string> {
