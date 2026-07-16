@@ -20,7 +20,7 @@ app.use(cors({
     : ['http://localhost:5173', 'http://localhost:3000'],
   credentials: true,
 }));
-app.use(express.json({ limit: '2mb' }));
+app.use(express.json({ limit: '8mb' }));
 
 // Request logger
 app.use((req, _res, next) => {

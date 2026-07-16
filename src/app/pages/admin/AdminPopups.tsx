@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Plus, Pencil, Trash2, Eye, EyeOff, X } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Plus, Pencil, Trash2, Eye, EyeOff, X, Upload, ImageIcon } from "lucide-react";
 import { auth } from "../../utils/store";
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
@@ -27,7 +27,7 @@ const POSITIONS = [
   { value: 'center-bottom', label: 'Centre — Bottom' },
 ];
 
-const EMPTY: Omit<Popup, 'id' | 'created_at'> = {
+const EMPTY = {
   title: '', image_url: '', orientation: 'landscape',
   image_width: 400, image_height: 280, button_text: '', button_url: '',
   position: 'right-bottom', is_active: 1,
@@ -35,6 +35,25 @@ const EMPTY: Omit<Popup, 'id' | 'created_at'> = {
 
 function headers() {
   return { 'Content-Type': 'application/json', 'x-admin-token': auth.getToken() };
+}
+
+async function resizeAndEncode(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    img.onload = () => {
+      const maxW = 900;
+      let w = img.width, h = img.height;
+      if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(objectUrl);
+      resolve(canvas.toDataURL('image/jpeg', 0.85));
+    };
+    img.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error('Failed to load image')); };
+    img.src = objectUrl;
+  });
 }
 
 const FIELD: React.CSSProperties = {
@@ -54,7 +73,11 @@ export function AdminPopups() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Popup | null>(null);
   const [form, setForm] = useState({ ...EMPTY });
+  const [imagePreview, setImagePreview] = useState('');
+  const [imageEncoding, setImageEncoding] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const load = async () => {
     setLoading(true);
@@ -66,18 +89,55 @@ export function AdminPopups() {
 
   useEffect(() => { load(); }, []);
 
-  const openAdd = () => { setEditing(null); setForm({ ...EMPTY }); setShowForm(true); };
-  const openEdit = (p: Popup) => { setEditing(p); setForm({ title: p.title, image_url: p.image_url, orientation: p.orientation, image_width: p.image_width, image_height: p.image_height, button_text: p.button_text, button_url: p.button_url, position: p.position, is_active: p.is_active }); setShowForm(true); };
+  const reset = () => {
+    setEditing(null);
+    setForm({ ...EMPTY });
+    setImagePreview('');
+    setError('');
+  };
+
+  const openAdd = () => { reset(); setShowForm(true); };
+
+  const openEdit = (p: Popup) => {
+    setEditing(p);
+    setForm({ title: p.title, image_url: p.image_url, orientation: p.orientation, image_width: p.image_width, image_height: p.image_height, button_text: p.button_text, button_url: p.button_url, position: p.position, is_active: p.is_active });
+    setImagePreview(p.image_url);
+    setError('');
+    setShowForm(true);
+  };
+
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageEncoding(true);
+    setError('');
+    try {
+      const encoded = await resizeAndEncode(file);
+      setImagePreview(encoded);
+      setForm((f) => ({ ...f, image_url: encoded }));
+    } catch {
+      setError('Could not load that image file. Please try another.');
+    } finally {
+      setImageEncoding(false);
+    }
+  };
 
   const save = async () => {
-    if (!form.title.trim() || !form.image_url.trim()) return;
+    if (!form.title.trim()) { setError('Please enter an Admin Label first.'); return; }
+    if (!form.image_url) { setError('Please upload an image.'); return; }
+    setError('');
     setSaving(true);
     try {
       const url = editing ? `${API_BASE}/api/admin/popups/${editing.id}` : `${API_BASE}/api/admin/popups`;
-      await fetch(url, { method: editing ? 'PUT' : 'POST', headers: headers() as HeadersInit, body: JSON.stringify(form) });
+      const res = await fetch(url, { method: editing ? 'PUT' : 'POST', headers: headers() as HeadersInit, body: JSON.stringify(form) });
+      if (!res.ok) throw new Error(await res.text());
       setShowForm(false);
       await load();
-    } finally { setSaving(false); }
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Save failed. Please try again.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const toggleActive = async (p: Popup) => {
@@ -115,12 +175,9 @@ export function AdminPopups() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {popups.map((p) => (
             <div key={p.id} style={{ background: '#141416', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 14 }}>
-              {/* Preview thumb */}
               <div style={{ width: 64, height: 44, borderRadius: 6, overflow: 'hidden', flexShrink: 0, background: '#1E1E22', border: '1px solid rgba(255,255,255,0.07)' }}>
-                <img src={p.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0.2'; }} />
+                <img src={p.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
-
-              {/* Info */}
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ color: '#F5F0E8', fontSize: 14, fontWeight: 600 }}>{p.title}</span>
@@ -133,10 +190,8 @@ export function AdminPopups() {
                   {p.button_text && <> &nbsp;·&nbsp; Button: "{p.button_text}"</>}
                 </div>
               </div>
-
-              {/* Actions */}
               <div style={{ display: 'flex', gap: 6 }}>
-                <button onClick={() => toggleActive(p)} title={p.is_active ? 'Hide popup' : 'Show popup'} style={{ padding: '6px 8px', borderRadius: 7, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: p.is_active ? '#4DB896' : '#6A6A7A', cursor: 'pointer' }}>
+                <button onClick={() => toggleActive(p)} title={p.is_active ? 'Hide' : 'Show'} style={{ padding: '6px 8px', borderRadius: 7, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: p.is_active ? '#4DB896' : '#6A6A7A', cursor: 'pointer' }}>
                   {p.is_active ? <Eye size={14} /> : <EyeOff size={14} />}
                 </button>
                 <button onClick={() => openEdit(p)} style={{ padding: '6px 8px', borderRadius: 7, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: '#9B9BAB', cursor: 'pointer' }}>
@@ -153,7 +208,7 @@ export function AdminPopups() {
 
       {/* Form Modal */}
       {showForm && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
           <div style={{ background: '#141416', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 560, maxHeight: '90vh', overflowY: 'auto' }}>
             {/* Modal header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
@@ -162,44 +217,82 @@ export function AdminPopups() {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {/* Title */}
+
+              {/* Admin Label */}
               <div>
                 <label style={LABEL}>Admin Label *</label>
-                <input style={FIELD} value={form.title} onChange={(e) => set('title', e.target.value)} placeholder="e.g. July Promo Banner" />
+                <input style={FIELD} value={form.title} onChange={(e) => { set('title', e.target.value); setError(''); }} placeholder="e.g. July Promo Banner" />
               </div>
 
-              {/* Image URL */}
+              {/* Image upload */}
               <div>
-                <label style={LABEL}>Image URL *</label>
-                <input style={FIELD} value={form.image_url} onChange={(e) => set('image_url', e.target.value)} placeholder="https://…" />
-              </div>
+                <label style={LABEL}>Popup Image *</label>
+                <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFile} />
 
-              {/* Image preview */}
-              {form.image_url && (
-                <div style={{ borderRadius: 8, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', maxHeight: 160 }}>
-                  <img src={form.image_url} alt="Preview" style={{ width: '100%', height: 160, objectFit: 'cover', display: 'block' }} onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0.2'; }} />
+                {/* Upload area */}
+                <div
+                  onClick={() => fileRef.current?.click()}
+                  style={{
+                    border: '2px dashed rgba(249,159,27,0.35)', borderRadius: 10,
+                    padding: imagePreview ? 0 : '28px 20px',
+                    cursor: 'pointer', textAlign: 'center', overflow: 'hidden',
+                    transition: 'border-color 0.15s',
+                    position: 'relative',
+                  }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(249,159,27,0.7)'; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(249,159,27,0.35)'; }}
+                >
+                  {imageEncoding ? (
+                    <div style={{ padding: '28px 20px', color: '#9B9BAB', fontSize: 13 }}>Processing image…</div>
+                  ) : imagePreview ? (
+                    <>
+                      <img src={imagePreview} alt="Preview" style={{ width: '100%', maxHeight: 200, objectFit: 'cover', display: 'block' }} />
+                      <div style={{ position: 'absolute', bottom: 8, right: 8, background: 'rgba(0,0,0,0.65)', borderRadius: 6, padding: '4px 10px', fontSize: 11, color: '#F5F0E8' }}>
+                        Click to change
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(249,159,27,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 10px' }}>
+                        <ImageIcon size={18} color="#F99F1B" />
+                      </div>
+                      <div style={{ color: '#F5F0E8', fontSize: 13, fontWeight: 500 }}>Click to upload image</div>
+                      <div style={{ color: '#6A6A7A', fontSize: 11, marginTop: 4 }}>JPG, PNG, WebP — auto-compressed for web</div>
+                    </>
+                  )}
                 </div>
-              )}
+
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 7, padding: '7px 14px', color: '#C0C0C8', fontSize: 12, cursor: 'pointer' }}
+                >
+                  <Upload size={13} /> {imagePreview ? 'Replace Image' : 'Choose File'}
+                </button>
+              </div>
 
               {/* Orientation */}
               <div>
                 <label style={LABEL}>Orientation</label>
                 <select style={FIELD} value={form.orientation} onChange={(e) => set('orientation', e.target.value)}>
-                  <option value="landscape">Landscape</option>
-                  <option value="portrait">Portrait</option>
+                  <option value="landscape">Landscape (wider than tall)</option>
+                  <option value="portrait">Portrait (taller than wide)</option>
                 </select>
               </div>
 
               {/* Size */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
-                  <label style={LABEL}>Width (px)</label>
+                  <label style={LABEL}>Display Width (px)</label>
                   <input style={FIELD} type="number" min={100} max={800} value={form.image_width} onChange={(e) => set('image_width', Number(e.target.value))} />
                 </div>
                 <div>
-                  <label style={LABEL}>Height (px)</label>
+                  <label style={LABEL}>Display Height (px)</label>
                   <input style={FIELD} type="number" min={100} max={800} value={form.image_height} onChange={(e) => set('image_height', Number(e.target.value))} />
                 </div>
+              </div>
+              <div style={{ color: '#6A6A7A', fontSize: 11, marginTop: -8 }}>
+                This controls the size of the popup on screen, not the original image dimensions.
               </div>
 
               {/* Position */}
@@ -222,13 +315,24 @@ export function AdminPopups() {
 
               {/* Active toggle */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <input type="checkbox" id="popup-active" checked={form.is_active === 1} onChange={(e) => set('is_active', e.target.checked ? 1 : 0)} style={{ width: 16, height: 16, cursor: 'pointer' }} />
+                <input type="checkbox" id="popup-active" checked={form.is_active === 1} onChange={(e) => set('is_active', e.target.checked ? 1 : 0)} style={{ width: 16, height: 16, cursor: 'pointer', accentColor: '#F99F1B' }} />
                 <label htmlFor="popup-active" style={{ color: '#C0C0C8', fontSize: 13, cursor: 'pointer' }}>Show this popup on the website</label>
               </div>
 
+              {/* Error */}
+              {error && (
+                <div style={{ background: 'rgba(255,80,80,0.1)', border: '1px solid rgba(255,80,80,0.25)', borderRadius: 8, padding: '10px 14px', color: '#FF6B6B', fontSize: 13 }}>
+                  {error}
+                </div>
+              )}
+
               {/* Save */}
-              <button onClick={save} disabled={saving || !form.title.trim() || !form.image_url.trim()} style={{ marginTop: 4, background: '#F99F1B', color: '#0A0A0A', border: 'none', borderRadius: 9, padding: '11px 0', fontSize: 14, fontWeight: 700, cursor: 'pointer', opacity: saving ? 0.7 : 1 }}>
-                {saving ? 'Saving…' : editing ? 'Save Changes' : 'Create Popup'}
+              <button
+                onClick={save}
+                disabled={saving || imageEncoding}
+                style={{ marginTop: 4, background: '#F99F1B', color: '#0A0A0A', border: 'none', borderRadius: 9, padding: '12px 0', fontSize: 14, fontWeight: 700, cursor: saving || imageEncoding ? 'not-allowed' : 'pointer', opacity: saving || imageEncoding ? 0.7 : 1 }}
+              >
+                {saving ? 'Saving…' : imageEncoding ? 'Processing image…' : editing ? 'Save Changes' : 'Create Popup'}
               </button>
             </div>
           </div>
