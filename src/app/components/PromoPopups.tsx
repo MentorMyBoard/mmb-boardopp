@@ -17,18 +17,6 @@ interface Popup {
   is_active: number;
 }
 
-const DISMISSED_KEY = 'bw_dismissed_popups';
-
-function getDismissed(): Set<string> {
-  try { return new Set(JSON.parse(sessionStorage.getItem(DISMISSED_KEY) || '[]')); }
-  catch { return new Set(); }
-}
-
-function dismiss(id: string) {
-  const d = getDismissed();
-  d.add(id);
-  sessionStorage.setItem(DISMISSED_KEY, JSON.stringify([...d]));
-}
 
 function positionStyle(pos: Popup['position']): React.CSSProperties {
   const base: React.CSSProperties = { position: 'fixed', zIndex: 8500 };
@@ -129,7 +117,7 @@ function SinglePopup({ popup, onDismiss }: { popup: Popup; onDismiss: () => void
 
 export function PromoPopups() {
   const [popups, setPopups] = useState<Popup[]>([]);
-  const [dismissed, setDismissed] = useState<Set<string>>(getDismissed());
+  const [dismissed, setDismissed] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetch(`${API_BASE}/api/popups`)
@@ -139,8 +127,7 @@ export function PromoPopups() {
   }, []);
 
   const handleDismiss = (id: string) => {
-    dismiss(id);
-    setDismissed(new Set(getDismissed()));
+    setDismissed((prev) => new Set([...prev, id]));
   };
 
   const visible = popups.filter((p) => !dismissed.has(p.id));
