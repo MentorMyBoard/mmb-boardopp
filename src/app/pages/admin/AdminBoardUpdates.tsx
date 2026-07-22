@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { RefreshCw, Plus, Check, EyeOff, Trash2, ExternalLink, AlertCircle, X, Edit2, BarChart2, Eye, FileText } from "lucide-react";
+import { RefreshCw, Plus, Check, EyeOff, Trash2, ExternalLink, AlertCircle, X, Edit2, BarChart2, Eye, FileText, Link2 } from "lucide-react";
 const API_BASE = import.meta.env.VITE_API_URL || '';
 const ADMIN_TOKEN = 'boardopp-admin-2024-secure';
 const ADMIN_HEADERS = { 'Content-Type': 'application/json', 'x-admin-token': ADMIN_TOKEN };
@@ -167,6 +167,32 @@ export function AdminBoardUpdates() {
   ];
 
   const [mainTab, setMainTab] = useState<'articles' | 'analytics'>('articles');
+  const [gmailStatus, setGmailStatus] = useState<'connected' | 'error' | null>(null);
+  const [reconnecting, setReconnecting] = useState(false);
+
+  // Detect ?gmail=connected or ?gmail=error after OAuth callback redirect
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const gmail = params.get('gmail');
+    if (gmail === 'connected') { setGmailStatus('connected'); window.history.replaceState({}, '', '/admin/board-updates'); }
+    else if (gmail === 'error') { setGmailStatus('error'); window.history.replaceState({}, '', '/admin/board-updates'); }
+  }, []);
+
+  const isTokenError = (err?: string) =>
+    !!err && (err.includes('invalid_grant') || err.includes('Token refresh failed') || err.includes('not configured'));
+
+  const handleReconnect = async () => {
+    setReconnecting(true);
+    try {
+      const r = await fetch(`${API_BASE}/api/admin/gmail-auth-url`, { headers: ADMIN_HEADERS });
+      const { url, error } = await r.json();
+      if (error) throw new Error(error);
+      window.location.href = url;
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : 'Could not get auth URL');
+      setReconnecting(false);
+    }
+  };
 
   return (
     <div>
@@ -189,6 +215,14 @@ export function AdminBoardUpdates() {
             {syncing ? 'Syncing Gmail…' : 'Sync Gmail'}
           </button>
           <button
+            onClick={handleReconnect}
+            disabled={reconnecting}
+            title="Re-authorize Gmail access — use this if Sync Gmail shows a token error"
+            style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '8px 16px', borderRadius: 8, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#9B9BAB', fontSize: 13, fontWeight: 500, cursor: reconnecting ? 'wait' : 'pointer' }}
+          >
+            <Link2 size={13} /> {reconnecting ? 'Redirecting…' : 'Reconnect Gmail'}
+          </button>
+          <button
             onClick={openAdd}
             style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '8px 16px', borderRadius: 8, background: '#F99F1B', border: 'none', color: '#0A0A0A', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
           >
@@ -196,6 +230,43 @@ export function AdminBoardUpdates() {
           </button>
         </div>
       </div>
+
+      {/* Gmail OAuth reconnect banner */}
+      {gmailStatus && (
+        <div style={{
+          marginBottom: 16, padding: '12px 16px', borderRadius: 8,
+          background: gmailStatus === 'connected' ? 'rgba(77,184,150,0.08)' : 'rgba(255,107,107,0.08)',
+          border: `1px solid ${gmailStatus === 'connected' ? 'rgba(77,184,150,0.25)' : 'rgba(255,107,107,0.25)'}`,
+          color: gmailStatus === 'connected' ? '#4DB896' : '#FF6B6B', fontSize: 13,
+          display: 'flex', alignItems: 'center', gap: 8,
+        }}>
+          {gmailStatus === 'connected'
+            ? <><Check size={14} /> Gmail reconnected successfully — you can now sync emails normally.</>
+            : <><AlertCircle size={14} /> Gmail reconnection failed. Please try "Reconnect Gmail" again.</>
+          }
+          <button onClick={() => setGmailStatus(null)} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'inherit', cursor: 'pointer' }}><X size={13} /></button>
+        </div>
+      )}
+
+      {/* Token error prompt */}
+      {syncResult?.error && isTokenError(syncResult.error) && (
+        <div style={{
+          marginBottom: 16, padding: '14px 16px', borderRadius: 8,
+          background: 'rgba(249,159,27,0.06)', border: '1px solid rgba(249,159,27,0.2)',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
+        }}>
+          <div style={{ color: '#C0C0C8', fontSize: 13 }}>
+            <strong style={{ color: '#F99F1B' }}>Gmail token expired.</strong> Click "Reconnect Gmail" to re-authorize in one step — no server access needed.
+          </div>
+          <button
+            onClick={handleReconnect}
+            disabled={reconnecting}
+            style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 8, background: '#F99F1B', border: 'none', color: '#0A0A0A', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+          >
+            <Link2 size={13} /> Reconnect Gmail
+          </button>
+        </div>
+      )}
 
       {/* Sync result banner */}
       {syncResult && (

@@ -89,6 +89,15 @@ function initDb() {
     );
   `);
 
+  // Settings table — stores rotating credentials and config
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS app_settings (
+      key        TEXT PRIMARY KEY,
+      value      TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+  `);
+
   // Safe schema migrations — silently skip if already applied
   db.exec(`
     CREATE TABLE IF NOT EXISTS promotional_popups (

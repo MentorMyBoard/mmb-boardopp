@@ -42,21 +42,67 @@ function httpsPost(urlStr, params) {
 
 // ── Gmail OAuth ────────────────────────────────────────────────────────────
 
-async function getAccessToken() {
-  const { GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN } = process.env;
-  if (!GMAIL_CLIENT_ID || !GMAIL_CLIENT_SECRET || !GMAIL_REFRESH_TOKEN) {
-    throw new Error('Gmail credentials not set. Add GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN to server/.env');
+function getSetting(db, key) {
+  if (!db) return null;
+  try { const row = db.prepare('SELECT value FROM app_settings WHERE key = ?').get(key); return row ? row.value : null; }
+  catch { return null; }
+}
+
+function setSetting(db, key, value) {
+  if (!db) return;
+  try { db.prepare('INSERT OR REPLACE INTO app_settings (key, value, updated_at) VALUES (?, ?, ?)').run(key, value, new Date().toISOString()); }
+  catch {}
+}
+
+async function getAccessToken(db) {
+  const { GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET } = process.env;
+
+  // DB takes priority — if not in DB yet, read from env and migrate it
+  let refreshToken = getSetting(db, 'gmail_refresh_token');
+  if (!refreshToken) {
+    refreshToken = process.env.GMAIL_REFRESH_TOKEN;
+    if (refreshToken && db) setSetting(db, 'gmail_refresh_token', refreshToken);
   }
+
+  if (!GMAIL_CLIENT_ID || !GMAIL_CLIENT_SECRET || !refreshToken) {
+    throw new Error('Gmail credentials not configured. Add GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN to server/.env — or use "Reconnect Gmail" in the admin panel.');
+  }
+
   const result = await httpsPost(TOKEN_URL, {
     client_id: GMAIL_CLIENT_ID,
     client_secret: GMAIL_CLIENT_SECRET,
-    refresh_token: GMAIL_REFRESH_TOKEN,
+    refresh_token: refreshToken,
     grant_type: 'refresh_token',
   });
+
   if (result.status !== 200 || !result.body.access_token) {
     throw new Error(`Token refresh failed: ${JSON.stringify(result.body)}`);
   }
+
+  // Google sometimes rotates the refresh token — save the new one immediately
+  if (result.body.refresh_token) {
+    setSetting(db, 'gmail_refresh_token', result.body.refresh_token);
+    console.log('[Gmail] Refresh token rotated and saved to DB');
+  }
+
   return result.body.access_token;
+}
+
+async function exchangeCodeForTokens(code, redirectUri, db) {
+  const { GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET } = process.env;
+  const result = await httpsPost(TOKEN_URL, {
+    code,
+    client_id: GMAIL_CLIENT_ID,
+    client_secret: GMAIL_CLIENT_SECRET,
+    redirect_uri: redirectUri,
+    grant_type: 'authorization_code',
+  });
+  if (result.status !== 200 || !result.body.refresh_token) {
+    throw new Error(`Token exchange failed: ${JSON.stringify(result.body)}`);
+  }
+  setSetting(db, 'gmail_refresh_token', result.body.refresh_token);
+  console.log('[Gmail] New refresh token saved to DB via admin re-auth');
+  return result.body;
 }
 
 async function getLabelId(token, labelName) {
@@ -222,7 +268,7 @@ function parseGoogleAlertsHtml(html, subject, emailDate) {
 async function syncGmailAlerts(db) {
   const labelName = process.env.GMAIL_LABEL_NAME || 'BoardUpdates';
 
-  const token = await getAccessToken();
+  const token = await getAccessToken(db);
   const labelId = await getLabelId(token, labelName);
   const messages = await listMessages(token, labelId, 50);
 
@@ -286,4 +332,4 @@ async function syncGmailAlerts(db) {
   return { processedEmails, newArticles, errors };
 }
 
-module.exports = { syncGmailAlerts, getAccessToken, getLabelId, listMessages, getMessage, getEmailBody, getHeader };
+module.exports = { syncGmailAlerts, getAccessToken, exchangeCodeForTokens, getLabelId, listMessages, getMessage, getEmailBody, getHeader };

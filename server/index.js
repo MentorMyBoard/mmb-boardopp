@@ -426,7 +426,7 @@ app.post('/api/admin/board-updates/sync', adminGuard, async (req, res) => {
 app.get('/api/admin/board-updates/debug-email', adminGuard, async (req, res) => {
   try {
     const { getAccessToken, getLabelId, listMessages, getMessage, getEmailBody, getHeader } = require('./gmail-boards');
-    const token = await getAccessToken();
+    const token = await getAccessToken(getDb());
     const labelName = process.env.GMAIL_LABEL_NAME || 'BoardUpdates';
     const labelId = await getLabelId(token, labelName);
     const messages = await listMessages(token, labelId, 3);
@@ -452,6 +452,40 @@ app.get('/api/admin/board-updates/sync-status', adminGuard, (req, res) => {
     res.json({ lastSync: last || null, totalEmailsProcessed: total });
   } catch (err) {
     res.status(500).json({ error: 'Failed to get sync status' });
+  }
+});
+
+// ── Gmail Re-auth ──────────────────────────────────────────────────────────
+
+const GMAIL_REDIRECT_URI = 'https://boardopp.mentormyboard.com/api/admin/gmail-callback';
+
+// Returns the Google OAuth URL for the admin to click
+app.get('/api/admin/gmail-auth-url', adminGuard, (req, res) => {
+  const clientId = process.env.GMAIL_CLIENT_ID;
+  if (!clientId) return res.status(500).json({ error: 'GMAIL_CLIENT_ID not set in server/.env' });
+  const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth' +
+    `?client_id=${encodeURIComponent(clientId)}` +
+    `&redirect_uri=${encodeURIComponent(GMAIL_REDIRECT_URI)}` +
+    `&response_type=code` +
+    `&scope=${encodeURIComponent('https://www.googleapis.com/auth/gmail.readonly')}` +
+    `&access_type=offline` +
+    `&prompt=consent`;
+  res.json({ url: authUrl });
+});
+
+// Google OAuth callback — exchanges code for token, saves to DB, redirects to admin
+app.get('/api/admin/gmail-callback', async (req, res) => {
+  const { code, error } = req.query;
+  if (error || !code) {
+    return res.redirect(`/admin/board-updates?gmail=error&reason=${encodeURIComponent(error || 'no_code')}`);
+  }
+  try {
+    const { exchangeCodeForTokens } = require('./gmail-boards');
+    await exchangeCodeForTokens(code, GMAIL_REDIRECT_URI, getDb());
+    res.redirect('/admin/board-updates?gmail=connected');
+  } catch (err) {
+    console.error('[Gmail Re-auth] Callback error:', err.message);
+    res.redirect(`/admin/board-updates?gmail=error&reason=${encodeURIComponent(err.message)}`);
   }
 });
 
