@@ -1,5 +1,6 @@
 import { useRef, useEffect } from "react";
 import { motion, useInView } from "motion/react";
+import { useNavigate } from "react-router";
 import { ArrowRight } from "lucide-react";
 
 export function FinalCTA() {
@@ -7,6 +8,11 @@ export function FinalCTA() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const navigate = useNavigate();
+
+  const scrollToSection = (id: string) => {
+    document.querySelector(id)?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -110,6 +116,7 @@ export function FinalCTA() {
 
           <div className="flex flex-wrap items-center justify-center gap-4">
             <button
+              onClick={() => navigate('/post-requirement')}
               style={{
                 background: '#F99F1B',
                 color: '#0A0A0A',
@@ -131,6 +138,7 @@ export function FinalCTA() {
               Post a Requirement <ArrowRight size={16} />
             </button>
             <button
+              onClick={() => scrollToSection('#vacancy')}
               style={{
                 background: 'rgba(255,255,255,0.05)',
                 color: '#F5F0E8',
@@ -149,6 +157,7 @@ export function FinalCTA() {
               Explore Opportunities
             </button>
             <button
+              onClick={() => scrollToSection('#assessments')}
               style={{
                 background: 'transparent',
                 color: '#F99F1B',

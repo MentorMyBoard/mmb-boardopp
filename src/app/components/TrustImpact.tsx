@@ -3,9 +3,9 @@ import { motion, useInView } from "motion/react";
 
 const counters = [
   { value: 500, suffix: "+", label: "Organizations Served", sub: "Across 18 industries" },
-  { value: 2000, suffix: "+", label: "Governance Professionals", sub: "In our network" },
-  { value: 150, suffix: "+", label: "Programs Conducted", sub: "By MentorMyBoard" },
-  { value: 1200, suffix: "+", label: "Board Opportunities", sub: "Facilitated to date" },
+  { value: 5000, suffix: "+", label: "Governance Professionals", sub: "In our network" },
+  { value: 1000, suffix: "+", label: "Programs Conducted", sub: "By MentorMyBoard" },
+  { value: 200, suffix: "+", label: "Board Opportunities", sub: "Facilitated to date" },
 ];
 
 function Counter({ value, suffix, inView }: { value: number; suffix: string; inView: boolean }) {

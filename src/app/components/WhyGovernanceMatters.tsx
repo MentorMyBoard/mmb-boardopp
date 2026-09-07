@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { motion, useInView } from "motion/react";
+import { useNavigate } from "react-router";
 
 const stats = [
   { value: 78, suffix: "%", label: "of boardrooms globally lack diverse expertise" },
@@ -37,6 +38,7 @@ function AnimatedNumber({ target, suffix, inView }: { target: number; suffix: st
 export function WhyGovernanceMatters() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const navigate = useNavigate();
 
   return (
     <section id="why" ref={ref} style={{ background: 'linear-gradient(180deg, #FFFFFF 0%, #F8F5ED 100%)', padding: '120px 0', overflow: 'hidden', position: 'relative' }}>
@@ -72,6 +74,7 @@ export function WhyGovernanceMatters() {
 
             <div className="mt-10">
               <button
+                onClick={() => navigate('/boardwatch')}
                 style={{
                   background: '#F99F1B',
                   color: '#0A0A0A',

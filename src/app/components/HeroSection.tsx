@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
+import { useNavigate } from "react-router";
 import { ArrowRight, ChevronDown } from "lucide-react";
 
 const floatingCards = [
@@ -13,6 +14,11 @@ export function HeroSection() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
   const [mounted, setMounted] = useState(false);
+  const navigate = useNavigate();
+
+  const scrollToSection = (id: string) => {
+    document.querySelector(id)?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -197,6 +203,7 @@ export function HeroSection() {
           className="flex flex-wrap items-center justify-center gap-4 mt-10"
         >
           <button
+            onClick={() => navigate('/post-requirement')}
             style={{
               background: '#F99F1B',
               color: '#0A0A0A',
@@ -224,6 +231,7 @@ export function HeroSection() {
             Post a Board Requirement <ArrowRight size={15} />
           </button>
           <button
+            onClick={() => scrollToSection('#vacancy')}
             style={{
               background: 'rgba(255,255,255,0.05)',
               color: '#F5F0E8',
@@ -248,6 +256,7 @@ export function HeroSection() {
             Explore Opportunities
           </button>
           <button
+            onClick={() => scrollToSection('#assessments')}
             style={{
               background: 'transparent',
               color: '#F99F1B',

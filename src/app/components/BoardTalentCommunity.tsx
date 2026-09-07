@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "motion/react";
+import { useNavigate } from "react-router";
 import { community as communityStore } from "../utils/store";
 
 const badgeStyle = (badge: string) => {
@@ -14,6 +15,7 @@ const badgeStyle = (badge: string) => {
 export function BoardTalentCommunity() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const navigate = useNavigate();
   const [professionals, setProfessionals] = useState(() =>
     communityStore.getActive().map((m) => ({
       name: m.name, title: m.designation, company: m.industry, expertise: m.expertise,
@@ -39,13 +41,13 @@ export function BoardTalentCommunity() {
           className="text-center mb-16"
         >
           <div className="inline-flex items-center gap-2 mb-5 px-3 py-1.5 rounded-full" style={{ background: 'rgba(249,159,27,0.1)', border: '1px solid rgba(249,159,27,0.25)' }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#C47E0F', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Governance Community</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#C47E0F', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Success Stories</span>
           </div>
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,4.5vw,3.5rem)', fontWeight: 600, color: '#1A1A2A', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
-            Board Talent <em style={{ color: '#F99F1B' }}>Community</em>
+            Board Placements <em style={{ color: '#F99F1B' }}>Closed</em>
           </h2>
           <p style={{ color: '#5A5A6A', fontSize: 16, lineHeight: 1.6, maxWidth: 480, margin: '16px auto 0' }}>
-            An exclusive network of governance professionals shaping the future of boardrooms.
+            A glimpse of the governance professionals we've successfully placed on boards.
           </p>
         </motion.div>
 
@@ -136,6 +138,30 @@ export function BoardTalentCommunity() {
               </motion.div>
             );
           })}
+
+          {/* Many more placed — avoids implying this is the full list */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.1 + professionals.length * 0.08 }}
+            className="flex flex-col items-center justify-center text-center rounded-2xl p-6"
+            style={{
+              background: 'rgba(249,159,27,0.05)',
+              border: '1.5px dashed rgba(249,159,27,0.3)',
+              minHeight: 200,
+            }}
+          >
+            <div
+              className="w-12 h-12 rounded-full flex items-center justify-center mb-4"
+              style={{ background: 'rgba(249,159,27,0.12)', border: '1px solid rgba(249,159,27,0.25)' }}
+            >
+              <span style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: '#F99F1B' }}>+</span>
+            </div>
+            <div style={{ color: '#1A1A2A', fontSize: 15, fontWeight: 600, marginBottom: 6 }}>Many More Placed</div>
+            <p style={{ color: '#5A5A6A', fontSize: 12, lineHeight: 1.6, maxWidth: 220 }}>
+              These are just a few highlights — hundreds more governance professionals have been placed through BoardOpp.
+            </p>
+          </motion.div>
         </div>
 
         <motion.div
@@ -145,6 +171,7 @@ export function BoardTalentCommunity() {
           className="text-center mt-12"
         >
           <button
+            onClick={() => navigate('/join')}
             style={{
               background: '#F99F1B',
               color: '#0A0A0A',

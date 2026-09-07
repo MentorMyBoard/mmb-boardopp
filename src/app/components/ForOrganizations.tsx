@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { motion, useInView } from "motion/react";
+import { useNavigate } from "react-router";
 import { Users, Network, TrendingUp, BarChart3, Leaf, Star } from "lucide-react";
 
 const services = [
@@ -38,6 +39,7 @@ const services = [
 export function ForOrganizations() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const navigate = useNavigate();
 
   return (
     <section id="organizations" ref={ref} style={{ background: '#08081C', padding: '120px 0' }}>
@@ -60,6 +62,7 @@ export function ForOrganizations() {
             </p>
           </div>
           <button
+            onClick={() => navigate('/post-requirement')}
             style={{
               background: '#F99F1B',
               color: '#0A0A0A',
