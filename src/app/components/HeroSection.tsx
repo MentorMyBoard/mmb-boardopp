@@ -4,8 +4,8 @@ import { useNavigate } from "react-router";
 import { ArrowRight, ChevronDown } from "lucide-react";
 
 const floatingCards = [
-  { icon: "🏛", label: "Board Placement", value: "1,200+ Roles", delay: 0 },
-  { icon: "⚖", label: "Governance Experts", value: "2,000+ Professionals", delay: 0.3 },
+  { icon: "🏛", label: "Board Placement", value: "200+ Roles", delay: 0 },
+  { icon: "⚖", label: "Governance Experts", value: "5,000+ Professionals", delay: 0.3 },
   { icon: "📊", label: "Organizations", value: "500+ Companies", delay: 0.6 },
   { icon: "🌿", label: "ESG Specialists", value: "340+ Advisors", delay: 0.9 },
 ];
