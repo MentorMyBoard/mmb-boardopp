@@ -61,16 +61,16 @@ export function AdminPartners() {
   const [list, setList] = useState<Partner[]>([]);
   const [modal, setModal] = useState<{ mode: 'add' | 'edit'; data: Partial<Partner> } | null>(null);
 
-  const load = () => setList(partners.getAll().sort((a, b) => a.order - b.order));
-  useEffect(load, []);
+  const load = async () => setList((await partners.getAll()).sort((a, b) => a.order - b.order));
+  useEffect(() => { load(); }, []);
 
-  const handleSave = (data: Partial<Partner>) => {
+  const handleSave = async (data: Partial<Partner>) => {
     if (modal?.mode === 'edit' && data.id) {
-      partners.update(data.id, data);
+      await partners.update(data.id, data);
     } else {
-      partners.add({ name: data.name || '', logo: data.logo || '', website: data.website || '#', order: data.order || list.length + 1, active: data.active ?? true });
+      await partners.add({ name: data.name || '', logo: data.logo || '', website: data.website || '#', order: data.order || list.length + 1, active: data.active ?? true });
     }
-    load(); setModal(null);
+    await load(); setModal(null);
   };
 
   return (
@@ -100,9 +100,9 @@ export function AdminPartners() {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#4A4A5A' }}>Order: {p.order}</span>
               <div style={{ display: 'flex', gap: 6 }}>
-                <IBtn icon={p.active ? Eye : EyeOff} color="#5FCF8A" title={p.active ? 'Deactivate' : 'Activate'} onClick={() => { partners.update(p.id, { active: !p.active }); load(); }} />
+                <IBtn icon={p.active ? Eye : EyeOff} color="#5FCF8A" title={p.active ? 'Deactivate' : 'Activate'} onClick={async () => { await partners.update(p.id, { active: !p.active }); load(); }} />
                 <IBtn icon={Edit2} color="#8890FF" title="Edit" onClick={() => setModal({ mode: 'edit', data: p })} />
-                <IBtn icon={Trash2} color="#FF6B6B" title="Delete" onClick={() => { if (confirm('Delete partner?')) { partners.remove(p.id); load(); } }} />
+                <IBtn icon={Trash2} color="#FF6B6B" title="Delete" onClick={async () => { if (confirm('Delete partner?')) { await partners.remove(p.id); load(); } }} />
               </div>
             </div>
           </div>

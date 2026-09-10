@@ -16,19 +16,15 @@ export function BoardTalentCommunity() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const navigate = useNavigate();
-  const [professionals, setProfessionals] = useState(() =>
-    communityStore.getActive().map((m) => ({
-      name: m.name, title: m.designation, company: m.industry, expertise: m.expertise,
-      badge: m.badges[0] || 'Governance Professional', img: m.photo, yrs: m.experience,
-    }))
-  );
+  const [professionals, setProfessionals] = useState<{ name: string; title: string; company: string; expertise: string[]; badge: string; img: string; yrs: string }[]>([]);
 
   useEffect(() => {
-    const data = communityStore.getActive().map((m) => ({
-      name: m.name, title: m.designation, company: m.industry, expertise: m.expertise,
-      badge: m.badges[0] || 'Governance Professional', img: m.photo, yrs: m.experience,
-    }));
-    if (data.length) setProfessionals(data);
+    communityStore.getActive().then((data) => {
+      setProfessionals(data.map((m) => ({
+        name: m.name, title: m.designation, company: m.industry, expertise: m.expertise,
+        badge: m.badges[0] || 'Governance Professional', img: m.photo, yrs: m.experience,
+      })));
+    });
   }, []);
 
   return (

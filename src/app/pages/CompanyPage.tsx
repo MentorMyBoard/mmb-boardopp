@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowLeft, ArrowRight, Check, Home } from "lucide-react";
 import { useNavigate } from "react-router";
 import { companies, content } from "../utils/store";
+import type { SiteContent } from "../utils/store";
 import { useSEO } from "../hooks/useSEO";
 import { CustomCursor } from "../components/CustomCursor";
 const WHATSAPP_URL = "https://wa.me/918655430211";
@@ -161,7 +162,8 @@ export function CompanyPage() {
       }
     },
   });
-  const cfg = content.get();
+  const [cfg, setCfg] = useState<SiteContent | null>(null);
+  useEffect(() => { content.get().then(setCfg); }, []);
 
   const update = (field: keyof FormData, value: string | string[]) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -226,7 +228,7 @@ export function CompanyPage() {
     setSubmitted(true);
   };
 
-  if (submitted) return <><CustomCursor /><SuccessCard assessmentUrl={cfg.boardAssessmentUrl} /></>;
+  if (submitted) return <><CustomCursor /><SuccessCard assessmentUrl={cfg?.boardAssessmentUrl || '#'} /></>;
 
   return (
     <><CustomCursor />

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowLeft, ArrowRight, Check, Upload, Star, RotateCcw, Home } from "lucide-react";
 import { useNavigate } from "react-router";
 import { directors, content } from "../utils/store";
+import type { SiteContent } from "../utils/store";
 import { useSEO } from "../hooks/useSEO";
 import { CustomCursor } from "../components/CustomCursor";
 const STEPS = ["Personal Info", "Professional Details", "Board Experience", "Preferences"];
@@ -179,7 +180,8 @@ export function DirectorPage() {
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [submitting, setSubmitting] = useState(false);
-  const cfg = content.get();
+  const [cfg, setCfg] = useState<SiteContent | null>(null);
+  useEffect(() => { content.get().then(setCfg); }, []);
 
   useSEO({
     title: "Register as Independent Director | BoardOpp by MentorMyBoard",
@@ -276,7 +278,7 @@ export function DirectorPage() {
     setSubmitted(true);
   };
 
-  if (submitted) return <><CustomCursor /><SuccessCard assessmentUrl={cfg.assessmentCardUrl} /></>;
+  if (submitted) return <><CustomCursor /><SuccessCard assessmentUrl={cfg?.assessmentCardUrl || '#'} /></>;
 
   return (
     <><CustomCursor />

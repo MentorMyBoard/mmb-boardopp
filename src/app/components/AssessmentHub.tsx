@@ -2,16 +2,16 @@ import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
 import { assessments as assessmentsStore, analytics } from "../utils/store";
+import type { Assessment } from "../utils/store";
 
 export function AssessmentHub() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [assessments, setAssessments] = useState(() => assessmentsStore.getActive());
+  const [assessments, setAssessments] = useState<Assessment[]>([]);
 
   useEffect(() => {
-    const data = assessmentsStore.getActive();
-    if (data.length) setAssessments(data);
+    assessmentsStore.getActive().then(setAssessments);
   }, []);
 
   const handleAssessmentClick = (url: string) => {

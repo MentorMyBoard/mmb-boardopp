@@ -547,6 +547,194 @@ app.delete('/api/admin/popups/:id', adminGuard, (req, res) => {
   }
 });
 
+// ── Site Content (assessments, partners, testimonials, community, settings) ─
+
+function mapAssessmentRow(r) {
+  return { id: r.id, name: r.name, description: r.description, buttonText: r.button_text, url: r.url, icon: r.icon, order: r.order_num, active: !!r.active };
+}
+function mapPartnerRow(r) {
+  return { id: r.id, name: r.name, logo: r.logo, website: r.website, order: r.order_num, active: !!r.active };
+}
+function mapTestimonialRow(r) {
+  return { id: r.id, name: r.name, designation: r.designation, organization: r.organization, photo: r.photo, text: r.text, videoLink: r.video_link, order: r.order_num, active: !!r.active };
+}
+function mapCommunityRow(r) {
+  return { id: r.id, name: r.name, photo: r.photo, designation: r.designation, industry: r.industry, experience: r.experience, expertise: JSON.parse(r.expertise || '[]'), badges: JSON.parse(r.badges || '[]'), linkedin: r.linkedin, order: r.order_num, active: !!r.active };
+}
+
+// Assessments
+app.get('/api/assessments', (_req, res) => {
+  const rows = getDb().prepare('SELECT * FROM assessments WHERE active = 1 ORDER BY order_num ASC').all();
+  res.json(rows.map(mapAssessmentRow));
+});
+app.get('/api/admin/assessments', adminGuard, (_req, res) => {
+  const rows = getDb().prepare('SELECT * FROM assessments ORDER BY order_num ASC').all();
+  res.json(rows.map(mapAssessmentRow));
+});
+app.post('/api/admin/assessments', adminGuard, (req, res) => {
+  const { name, description, buttonText, url, icon, order, active } = req.body;
+  if (!name) return res.status(400).json({ error: 'name is required' });
+  const id = uid();
+  const now = new Date().toISOString();
+  getDb().prepare(`INSERT INTO assessments (id, name, description, button_text, url, icon, order_num, active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+    .run(id, name, description || '', buttonText || '', url || '', icon || '🏛', order || 1, active !== false ? 1 : 0, now, now);
+  res.json({ success: true, id });
+});
+app.put('/api/admin/assessments/:id', adminGuard, (req, res) => {
+  const cur = getDb().prepare('SELECT * FROM assessments WHERE id = ?').get(req.params.id);
+  if (!cur) return res.status(404).json({ error: 'Not found' });
+  const name = req.body.name ?? cur.name;
+  const description = req.body.description ?? cur.description;
+  const buttonText = req.body.buttonText ?? cur.button_text;
+  const url = req.body.url ?? cur.url;
+  const icon = req.body.icon ?? cur.icon;
+  const order = req.body.order ?? cur.order_num;
+  const active = req.body.active ?? !!cur.active;
+  const now = new Date().toISOString();
+  getDb().prepare(`UPDATE assessments SET name=?, description=?, button_text=?, url=?, icon=?, order_num=?, active=?, updated_at=? WHERE id=?`)
+    .run(name, description, buttonText, url, icon, order, active ? 1 : 0, now, req.params.id);
+  res.json({ success: true });
+});
+app.delete('/api/admin/assessments/:id', adminGuard, (req, res) => {
+  getDb().prepare('DELETE FROM assessments WHERE id = ?').run(req.params.id);
+  res.json({ success: true });
+});
+
+// Partners
+app.get('/api/partners', (_req, res) => {
+  const rows = getDb().prepare('SELECT * FROM partners WHERE active = 1 ORDER BY order_num ASC').all();
+  res.json(rows.map(mapPartnerRow));
+});
+app.get('/api/admin/partners', adminGuard, (_req, res) => {
+  const rows = getDb().prepare('SELECT * FROM partners ORDER BY order_num ASC').all();
+  res.json(rows.map(mapPartnerRow));
+});
+app.post('/api/admin/partners', adminGuard, (req, res) => {
+  const { name, logo, website, order, active } = req.body;
+  if (!name) return res.status(400).json({ error: 'name is required' });
+  const id = uid();
+  const now = new Date().toISOString();
+  getDb().prepare(`INSERT INTO partners (id, name, logo, website, order_num, active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
+    .run(id, name, logo || '', website || '#', order || 1, active !== false ? 1 : 0, now, now);
+  res.json({ success: true, id });
+});
+app.put('/api/admin/partners/:id', adminGuard, (req, res) => {
+  const cur = getDb().prepare('SELECT * FROM partners WHERE id = ?').get(req.params.id);
+  if (!cur) return res.status(404).json({ error: 'Not found' });
+  const name = req.body.name ?? cur.name;
+  const logo = req.body.logo ?? cur.logo;
+  const website = req.body.website ?? cur.website;
+  const order = req.body.order ?? cur.order_num;
+  const active = req.body.active ?? !!cur.active;
+  const now = new Date().toISOString();
+  getDb().prepare(`UPDATE partners SET name=?, logo=?, website=?, order_num=?, active=?, updated_at=? WHERE id=?`)
+    .run(name, logo, website, order, active ? 1 : 0, now, req.params.id);
+  res.json({ success: true });
+});
+app.delete('/api/admin/partners/:id', adminGuard, (req, res) => {
+  getDb().prepare('DELETE FROM partners WHERE id = ?').run(req.params.id);
+  res.json({ success: true });
+});
+
+// Testimonials
+app.get('/api/testimonials', (_req, res) => {
+  const rows = getDb().prepare('SELECT * FROM testimonials WHERE active = 1 ORDER BY order_num ASC').all();
+  res.json(rows.map(mapTestimonialRow));
+});
+app.get('/api/admin/testimonials', adminGuard, (_req, res) => {
+  const rows = getDb().prepare('SELECT * FROM testimonials ORDER BY order_num ASC').all();
+  res.json(rows.map(mapTestimonialRow));
+});
+app.post('/api/admin/testimonials', adminGuard, (req, res) => {
+  const { name, designation, organization, photo, text, videoLink, order, active } = req.body;
+  if (!name) return res.status(400).json({ error: 'name is required' });
+  const id = uid();
+  const now = new Date().toISOString();
+  getDb().prepare(`INSERT INTO testimonials (id, name, designation, organization, photo, text, video_link, order_num, active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+    .run(id, name, designation || '', organization || '', photo || '', text || '', videoLink || '', order || 1, active !== false ? 1 : 0, now, now);
+  res.json({ success: true, id });
+});
+app.put('/api/admin/testimonials/:id', adminGuard, (req, res) => {
+  const cur = getDb().prepare('SELECT * FROM testimonials WHERE id = ?').get(req.params.id);
+  if (!cur) return res.status(404).json({ error: 'Not found' });
+  const name = req.body.name ?? cur.name;
+  const designation = req.body.designation ?? cur.designation;
+  const organization = req.body.organization ?? cur.organization;
+  const photo = req.body.photo ?? cur.photo;
+  const text = req.body.text ?? cur.text;
+  const videoLink = req.body.videoLink ?? cur.video_link;
+  const order = req.body.order ?? cur.order_num;
+  const active = req.body.active ?? !!cur.active;
+  const now = new Date().toISOString();
+  getDb().prepare(`UPDATE testimonials SET name=?, designation=?, organization=?, photo=?, text=?, video_link=?, order_num=?, active=?, updated_at=? WHERE id=?`)
+    .run(name, designation, organization, photo, text, videoLink, order, active ? 1 : 0, now, req.params.id);
+  res.json({ success: true });
+});
+app.delete('/api/admin/testimonials/:id', adminGuard, (req, res) => {
+  getDb().prepare('DELETE FROM testimonials WHERE id = ?').run(req.params.id);
+  res.json({ success: true });
+});
+
+// Community members
+app.get('/api/community', (_req, res) => {
+  const rows = getDb().prepare('SELECT * FROM community_members WHERE active = 1 ORDER BY order_num ASC').all();
+  res.json(rows.map(mapCommunityRow));
+});
+app.get('/api/admin/community', adminGuard, (_req, res) => {
+  const rows = getDb().prepare('SELECT * FROM community_members ORDER BY order_num ASC').all();
+  res.json(rows.map(mapCommunityRow));
+});
+app.post('/api/admin/community', adminGuard, (req, res) => {
+  const { name, photo, designation, industry, experience, expertise, badges, linkedin, order, active } = req.body;
+  if (!name) return res.status(400).json({ error: 'name is required' });
+  const id = uid();
+  const now = new Date().toISOString();
+  getDb().prepare(`INSERT INTO community_members (id, name, photo, designation, industry, experience, expertise, badges, linkedin, order_num, active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+    .run(id, name, photo || '', designation || '', industry || '', experience || '', JSON.stringify(expertise || []), JSON.stringify(badges || []), linkedin || '#', order || 1, active !== false ? 1 : 0, now, now);
+  res.json({ success: true, id });
+});
+app.put('/api/admin/community/:id', adminGuard, (req, res) => {
+  const cur = getDb().prepare('SELECT * FROM community_members WHERE id = ?').get(req.params.id);
+  if (!cur) return res.status(404).json({ error: 'Not found' });
+  const name = req.body.name ?? cur.name;
+  const photo = req.body.photo ?? cur.photo;
+  const designation = req.body.designation ?? cur.designation;
+  const industry = req.body.industry ?? cur.industry;
+  const experience = req.body.experience ?? cur.experience;
+  const expertise = req.body.expertise ?? JSON.parse(cur.expertise || '[]');
+  const badges = req.body.badges ?? JSON.parse(cur.badges || '[]');
+  const linkedin = req.body.linkedin ?? cur.linkedin;
+  const order = req.body.order ?? cur.order_num;
+  const active = req.body.active ?? !!cur.active;
+  const now = new Date().toISOString();
+  getDb().prepare(`UPDATE community_members SET name=?, photo=?, designation=?, industry=?, experience=?, expertise=?, badges=?, linkedin=?, order_num=?, active=?, updated_at=? WHERE id=?`)
+    .run(name, photo, designation, industry, experience, JSON.stringify(expertise), JSON.stringify(badges), linkedin, order, active ? 1 : 0, now, req.params.id);
+  res.json({ success: true });
+});
+app.delete('/api/admin/community/:id', adminGuard, (req, res) => {
+  getDb().prepare('DELETE FROM community_members WHERE id = ?').run(req.params.id);
+  res.json({ success: true });
+});
+
+// Site content (singleton, stored in app_settings)
+app.get('/api/content', (_req, res) => {
+  const row = getDb().prepare("SELECT value FROM app_settings WHERE key = 'site_content'").get();
+  res.json(row ? JSON.parse(row.value) : {});
+});
+app.put('/api/admin/content', adminGuard, (req, res) => {
+  const row = getDb().prepare("SELECT value FROM app_settings WHERE key = 'site_content'").get();
+  const current = row ? JSON.parse(row.value) : {};
+  const merged = { ...current, ...req.body };
+  const now = new Date().toISOString();
+  getDb().prepare(`INSERT INTO app_settings (key, value, updated_at) VALUES ('site_content', ?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value, updated_at=excluded.updated_at`).run(JSON.stringify(merged), now);
+  res.json({ success: true, data: merged });
+});
+app.post('/api/admin/content/reset', adminGuard, (req, res) => {
+  const now = new Date().toISOString();
+  getDb().prepare(`UPDATE app_settings SET value=?, updated_at=? WHERE key='site_content'`).run(JSON.stringify(req.body), now);
+  res.json({ success: true });
+});
+
 // ── Health check ───────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', env: process.env.NODE_ENV, timestamp: new Date().toISOString() });

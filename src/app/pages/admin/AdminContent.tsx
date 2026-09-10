@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { content, auth } from "../../utils/store";
 import type { SiteContent } from "../../utils/store";
 import { Save, RotateCcw, Check, Lock } from "lucide-react";
 
+const EMPTY_CONTENT: SiteContent = {
+  heroTitle: '', heroSubtitle: '', heroCtaPrimary: '', heroCtaSecondary: '',
+  aboutTitle: '', aboutBody: '', trustNumbers: [],
+  footerTagline: '', contactEmail: '', contactPhone: '', assessmentCardUrl: '', boardAssessmentUrl: '',
+};
+
 export function AdminContent() {
-  const [cfg, setCfg] = useState<SiteContent>(content.get());
+  const [cfg, setCfg] = useState<SiteContent>(EMPTY_CONTENT);
+  useEffect(() => { content.get().then(setCfg); }, []);
   const [saved, setSaved] = useState(false);
   const [activeTab, setActiveTab] = useState<'hero' | 'urls' | 'contact' | 'password'>('hero');
   const [newPassword, setNewPassword] = useState('');
@@ -17,16 +24,16 @@ export function AdminContent() {
     setSaved(false);
   };
 
-  const handleSave = () => {
-    content.update(cfg);
+  const handleSave = async () => {
+    await content.update(cfg);
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     if (confirm('Reset all content to defaults?')) {
-      content.reset();
-      setCfg(content.get());
+      await content.reset();
+      setCfg(await content.get());
     }
   };
 

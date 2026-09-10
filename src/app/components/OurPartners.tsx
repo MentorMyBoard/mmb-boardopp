@@ -56,7 +56,7 @@ export function OurPartners() {
   const animRef = useRef<number>(0);
 
   useEffect(() => {
-    setPartnerList(partnersStore.getActive());
+    partnersStore.getActive().then(setPartnerList);
   }, []);
 
   // Infinite marquee animation

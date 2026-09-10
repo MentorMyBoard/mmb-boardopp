@@ -63,16 +63,16 @@ export function AdminAssessments() {
   const [list, setList] = useState<Assessment[]>([]);
   const [modal, setModal] = useState<{ mode: 'add' | 'edit'; data: Partial<Assessment> } | null>(null);
 
-  const load = () => setList(assessments.getAll().sort((a, b) => a.order - b.order));
-  useEffect(load, []);
+  const load = async () => setList((await assessments.getAll()).sort((a, b) => a.order - b.order));
+  useEffect(() => { load(); }, []);
 
-  const handleSave = (data: Partial<Assessment>) => {
+  const handleSave = async (data: Partial<Assessment>) => {
     if (modal?.mode === 'edit' && data.id) {
-      assessments.update(data.id, data);
+      await assessments.update(data.id, data);
     } else {
-      assessments.add({ name: data.name || '', description: data.description || '', buttonText: data.buttonText || '', url: data.url || '', icon: data.icon || '🏛', order: data.order || list.length + 1, active: data.active ?? true });
+      await assessments.add({ name: data.name || '', description: data.description || '', buttonText: data.buttonText || '', url: data.url || '', icon: data.icon || '🏛', order: data.order || list.length + 1, active: data.active ?? true });
     }
-    load();
+    await load();
     setModal(null);
   };
 
@@ -103,9 +103,9 @@ export function AdminAssessments() {
               </div>
             </div>
             <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-              <IconBtn icon={a.active ? Eye : EyeOff} color="#5FCF8A" title={a.active ? 'Deactivate' : 'Activate'} onClick={() => { assessments.update(a.id, { active: !a.active }); load(); }} />
+              <IconBtn icon={a.active ? Eye : EyeOff} color="#5FCF8A" title={a.active ? 'Deactivate' : 'Activate'} onClick={async () => { await assessments.update(a.id, { active: !a.active }); load(); }} />
               <IconBtn icon={Edit2} color="#8890FF" title="Edit" onClick={() => setModal({ mode: 'edit', data: a })} />
-              <IconBtn icon={Trash2} color="#FF6B6B" title="Delete" onClick={() => { if (confirm('Delete this assessment?')) { assessments.remove(a.id); load(); } }} />
+              <IconBtn icon={Trash2} color="#FF6B6B" title="Delete" onClick={async () => { if (confirm('Delete this assessment?')) { await assessments.remove(a.id); load(); } }} />
             </div>
           </div>
         ))}

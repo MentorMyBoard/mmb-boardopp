@@ -85,16 +85,16 @@ export function AdminCommunity() {
   const [list, setList] = useState<CommunityMember[]>([]);
   const [modal, setModal] = useState<{ mode: 'add' | 'edit'; data: Partial<CommunityMember> } | null>(null);
 
-  const load = () => setList(community.getAll().sort((a, b) => a.order - b.order));
-  useEffect(load, []);
+  const load = async () => setList((await community.getAll()).sort((a, b) => a.order - b.order));
+  useEffect(() => { load(); }, []);
 
-  const handleSave = (data: Partial<CommunityMember>) => {
+  const handleSave = async (data: Partial<CommunityMember>) => {
     if (modal?.mode === 'edit' && data.id) {
-      community.update(data.id, data);
+      await community.update(data.id, data);
     } else {
-      community.add({ name: data.name || '', photo: data.photo || '', designation: data.designation || '', industry: data.industry || '', experience: data.experience || '', expertise: data.expertise || [], badges: data.badges || [], linkedin: data.linkedin || '', order: data.order || list.length + 1, active: data.active ?? true });
+      await community.add({ name: data.name || '', photo: data.photo || '', designation: data.designation || '', industry: data.industry || '', experience: data.experience || '', expertise: data.expertise || [], badges: data.badges || [], linkedin: data.linkedin || '', order: data.order || list.length + 1, active: data.active ?? true });
     }
-    load(); setModal(null);
+    await load(); setModal(null);
   };
 
   return (
@@ -129,9 +129,9 @@ export function AdminCommunity() {
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#4A4A5A' }}>Order: {m.order}</span>
               <div style={{ display: 'flex', gap: 6 }}>
                 {m.linkedin && <a href={m.linkedin} target="_blank" rel="noreferrer" title="LinkedIn" style={{ width: 28, height: 28, borderRadius: 7, background: 'rgba(136,144,255,0.1)', border: '1px solid rgba(136,144,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}><Linkedin size={12} color="#8890FF" /></a>}
-                <IBtn icon={m.active ? Eye : EyeOff} color="#5FCF8A" title={m.active ? 'Deactivate' : 'Activate'} onClick={() => { community.update(m.id, { active: !m.active }); load(); }} />
+                <IBtn icon={m.active ? Eye : EyeOff} color="#5FCF8A" title={m.active ? 'Deactivate' : 'Activate'} onClick={async () => { await community.update(m.id, { active: !m.active }); load(); }} />
                 <IBtn icon={Edit2} color="#8890FF" title="Edit" onClick={() => setModal({ mode: 'edit', data: m })} />
-                <IBtn icon={Trash2} color="#FF6B6B" title="Delete" onClick={() => { if (confirm('Remove this member?')) { community.remove(m.id); load(); } }} />
+                <IBtn icon={Trash2} color="#FF6B6B" title="Delete" onClick={async () => { if (confirm('Remove this member?')) { await community.remove(m.id); load(); } }} />
               </div>
             </div>
           </div>

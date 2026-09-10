@@ -60,16 +60,16 @@ export function AdminTestimonials() {
   const [list, setList] = useState<Testimonial[]>([]);
   const [modal, setModal] = useState<{ mode: 'add' | 'edit'; data: Partial<Testimonial> } | null>(null);
 
-  const load = () => setList(testimonials.getAll().sort((a, b) => a.order - b.order));
-  useEffect(load, []);
+  const load = async () => setList((await testimonials.getAll()).sort((a, b) => a.order - b.order));
+  useEffect(() => { load(); }, []);
 
-  const handleSave = (data: Partial<Testimonial>) => {
+  const handleSave = async (data: Partial<Testimonial>) => {
     if (modal?.mode === 'edit' && data.id) {
-      testimonials.update(data.id, data);
+      await testimonials.update(data.id, data);
     } else {
-      testimonials.add({ name: data.name || '', designation: data.designation || '', organization: data.organization || '', photo: data.photo || '', text: data.text || '', videoLink: data.videoLink, order: data.order || list.length + 1, active: data.active ?? true });
+      await testimonials.add({ name: data.name || '', designation: data.designation || '', organization: data.organization || '', photo: data.photo || '', text: data.text || '', videoLink: data.videoLink, order: data.order || list.length + 1, active: data.active ?? true });
     }
-    load(); setModal(null);
+    await load(); setModal(null);
   };
 
   return (
@@ -94,9 +94,9 @@ export function AdminTestimonials() {
               <div style={{ color: '#5A5A6A', fontSize: 12, marginTop: 6, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>"{t.text}"</div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flexShrink: 0 }}>
-              <IBtn icon={t.active ? Eye : EyeOff} color="#5FCF8A" title={t.active ? 'Deactivate' : 'Activate'} onClick={() => { testimonials.update(t.id, { active: !t.active }); load(); }} />
+              <IBtn icon={t.active ? Eye : EyeOff} color="#5FCF8A" title={t.active ? 'Deactivate' : 'Activate'} onClick={async () => { await testimonials.update(t.id, { active: !t.active }); load(); }} />
               <IBtn icon={Edit2} color="#8890FF" title="Edit" onClick={() => setModal({ mode: 'edit', data: t })} />
-              <IBtn icon={Trash2} color="#FF6B6B" title="Delete" onClick={() => { if (confirm('Delete testimonial?')) { testimonials.remove(t.id); load(); } }} />
+              <IBtn icon={Trash2} color="#FF6B6B" title="Delete" onClick={async () => { if (confirm('Delete testimonial?')) { await testimonials.remove(t.id); load(); } }} />
             </div>
           </div>
         ))}

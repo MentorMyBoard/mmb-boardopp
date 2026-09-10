@@ -7,15 +7,14 @@ export function Testimonials() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const [current, setCurrent] = useState(0);
-  const [testimonials, setTestimonials] = useState(testimonialsStore.getActive().map((t) => ({
-    name: t.name, role: t.designation, company: t.organization, quote: t.text, img: t.photo,
-  })));
+  const [testimonials, setTestimonials] = useState<{ name: string; role: string; company: string; quote: string; img: string }[]>([]);
 
   useEffect(() => {
-    const data = testimonialsStore.getActive().map((t) => ({
-      name: t.name, role: t.designation, company: t.organization, quote: t.text, img: t.photo,
-    }));
-    if (data.length) setTestimonials(data);
+    testimonialsStore.getActive().then((data) => {
+      setTestimonials(data.map((t) => ({
+        name: t.name, role: t.designation, company: t.organization, quote: t.text, img: t.photo,
+      })));
+    });
   }, []);
 
   useEffect(() => {
