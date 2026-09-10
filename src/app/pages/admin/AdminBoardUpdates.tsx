@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { RefreshCw, Plus, Check, EyeOff, Trash2, ExternalLink, AlertCircle, X, Edit2, BarChart2, Eye, FileText, Link2 } from "lucide-react";
+import { RefreshCw, Plus, Check, EyeOff, Trash2, ExternalLink, AlertCircle, X, Edit2, BarChart2, Eye, FileText, Link2, Square, CheckSquare } from "lucide-react";
 const API_BASE = import.meta.env.VITE_API_URL || '';
 const ADMIN_TOKEN = 'boardopp-admin-2024-secure';
 const ADMIN_HEADERS = { 'Content-Type': 'application/json', 'x-admin-token': ADMIN_TOKEN };
@@ -61,6 +61,8 @@ export function AdminBoardUpdates() {
   const [form, setForm] = useState<AddFormData>(EMPTY_FORM);
   const [formError, setFormError] = useState('');
   const [saving, setSaving] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkDeleting, setBulkDeleting] = useState(false);
 
   const fetchArticles = useCallback(async (statusFilter = filter) => {
     setLoading(true);
@@ -70,10 +72,37 @@ export function AdminBoardUpdates() {
       const json = await r.json();
       setArticles(json.data || []);
       setCounts(json.counts || {});
+      setSelectedIds(new Set());
     } finally {
       setLoading(false);
     }
   }, [filter]);
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    setSelectedIds((prev) => (prev.size === articles.length ? new Set() : new Set(articles.map((a) => a.id))));
+  };
+
+  const deleteSelected = async () => {
+    if (!selectedIds.size) return;
+    if (!confirm(`Delete ${selectedIds.size} selected article${selectedIds.size > 1 ? 's' : ''}? This cannot be undone.`)) return;
+    setBulkDeleting(true);
+    try {
+      await fetch(`${API_BASE}/api/admin/board-updates/bulk-delete`, {
+        method: 'POST', headers: ADMIN_HEADERS, body: JSON.stringify({ ids: Array.from(selectedIds) }),
+      });
+      await fetchArticles(filter);
+    } finally {
+      setBulkDeleting(false);
+    }
+  };
 
   const fetchSyncStatus = useCallback(async () => {
     try {
@@ -315,7 +344,7 @@ export function AdminBoardUpdates() {
 
       {mainTab === 'analytics' ? <AnalyticsTab /> : <>
       {/* Status tabs */}
-      <div style={{ display: 'flex', gap: 6, marginBottom: 20 }}>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 14, flexWrap: 'wrap', alignItems: 'center' }}>
         {statusTabs.map((tab) => (
           <button
             key={tab.key}
@@ -332,6 +361,28 @@ export function AdminBoardUpdates() {
         ))}
       </div>
 
+      {/* Bulk selection bar */}
+      {articles.length > 0 && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14, padding: '8px 4px' }}>
+          <button
+            onClick={toggleSelectAll}
+            style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'none', border: 'none', color: '#9B9BAB', fontSize: 12, cursor: 'pointer', padding: 0 }}
+          >
+            {selectedIds.size === articles.length ? <CheckSquare size={15} color="#F99F1B" /> : <Square size={15} />}
+            {selectedIds.size > 0 ? `${selectedIds.size} selected` : 'Select all'}
+          </button>
+          {selectedIds.size > 0 && (
+            <button
+              onClick={deleteSelected}
+              disabled={bulkDeleting}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 7, background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.25)', color: '#FF6B6B', fontSize: 12, fontWeight: 500, cursor: bulkDeleting ? 'wait' : 'pointer' }}
+            >
+              <Trash2 size={13} /> {bulkDeleting ? 'Deleting…' : `Delete Selected (${selectedIds.size})`}
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Articles list */}
       {loading ? (
         <div style={{ color: '#6A6A7A', fontSize: 14, padding: '40px 0', textAlign: 'center' }}>Loading…</div>
@@ -345,10 +396,21 @@ export function AdminBoardUpdates() {
             <div
               key={a.id}
               style={{
-                background: '#141416', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10,
+                background: selectedIds.has(a.id) ? 'rgba(249,159,27,0.05)' : '#141416',
+                border: selectedIds.has(a.id) ? '1px solid rgba(249,159,27,0.25)' : '1px solid rgba(255,255,255,0.06)',
+                borderRadius: 10,
                 padding: '14px 16px', display: 'flex', gap: 14, alignItems: 'flex-start',
               }}
             >
+              {/* Select checkbox */}
+              <button
+                onClick={() => toggleSelect(a.id)}
+                style={{ flexShrink: 0, marginTop: 2, background: 'none', border: 'none', color: selectedIds.has(a.id) ? '#F99F1B' : '#4A4A5A', cursor: 'pointer', padding: 0, display: 'flex' }}
+                title={selectedIds.has(a.id) ? 'Deselect' : 'Select'}
+              >
+                {selectedIds.has(a.id) ? <CheckSquare size={16} /> : <Square size={16} />}
+              </button>
+
               {/* Status badge */}
               <div style={{ flexShrink: 0, marginTop: 2 }}>
                 <span style={{

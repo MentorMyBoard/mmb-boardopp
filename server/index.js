@@ -312,7 +312,7 @@ app.get('/api/admin/board-updates', adminGuard, (req, res) => {
     let where = status ? 'WHERE status = ?' : '';
     const params = status ? [status] : [];
     const rows = getDb().prepare(
-      `SELECT * FROM board_updates ${where} ORDER BY created_at DESC`
+      `SELECT * FROM board_updates ${where} ORDER BY published_date DESC, created_at DESC`
     ).all(...params);
     const counts = getDb().prepare(
       "SELECT status, COUNT(*) as cnt FROM board_updates GROUP BY status"
@@ -406,6 +406,18 @@ app.patch('/api/admin/board-updates/:id/status', adminGuard, (req, res) => {
 app.delete('/api/admin/board-updates/:id', adminGuard, (req, res) => {
   getDb().prepare('DELETE FROM board_updates WHERE id = ?').run(req.params.id);
   res.json({ success: true });
+});
+
+app.post('/api/admin/board-updates/bulk-delete', adminGuard, (req, res) => {
+  try {
+    const ids = Array.isArray(req.body.ids) ? req.body.ids : [];
+    if (!ids.length) return res.status(400).json({ error: 'ids array is required' });
+    const placeholders = ids.map(() => '?').join(',');
+    const result = getDb().prepare(`DELETE FROM board_updates WHERE id IN (${placeholders})`).run(...ids);
+    res.json({ success: true, deleted: result.changes });
+  } catch (err) {
+    res.status(500).json({ error: 'Bulk delete failed' });
+  }
 });
 
 app.post('/api/admin/board-updates/reset-sync-log', adminGuard, (req, res) => {
