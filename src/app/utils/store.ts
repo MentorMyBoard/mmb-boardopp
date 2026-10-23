@@ -188,6 +188,58 @@ export async function deleteCompanyLead(id: string): Promise<void> {
   await fetch(`/api/admin/companies/${id}`, { method: 'DELETE', headers: { 'x-admin-token': ADMIN_API_TOKEN } });
 }
 
+// --- 60-Second Boardroom Challenge ---
+export interface ChallengeEntry {
+  id: string;
+  name: string;
+  email: string;
+  status: 'registered' | 'completed';
+  style: string;
+  runnerUp: string;
+  seconds: number | null;
+  overtime: boolean;
+  castingVote: boolean;
+  votes: string;
+  picks: string;
+  createdAt: string;
+  completedAt: string | null;
+}
+
+export interface ChallengeResult {
+  style: string;
+  runnerUp: string;
+  seconds: number;
+  overtime: boolean;
+  castingVote: boolean;
+  votes: string;
+  picks: string;
+}
+
+export const boardroomChallenge = {
+  register: async (name: string, email: string): Promise<string> => {
+    const res = await fetch('/api/boardroom-challenge/register', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.id) throw new Error(data.error || 'Registration failed');
+    return data.id;
+  },
+  saveResult: async (entryId: string, result: ChallengeResult): Promise<void> => {
+    const res = await fetch(`/api/boardroom-challenge/${entryId}/result`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(result),
+    });
+    if (!res.ok) throw new Error('Failed to save result');
+  },
+  getAll: async (): Promise<ChallengeEntry[]> => {
+    const res = await fetch('/api/admin/boardroom-challenge', { headers: { 'x-admin-token': ADMIN_API_TOKEN } });
+    if (!res.ok) throw new Error('Failed to fetch challenge entries');
+    return res.json();
+  },
+  remove: async (id: string): Promise<void> => {
+    await fetch(`/api/admin/boardroom-challenge/${id}`, { method: 'DELETE', headers: { 'x-admin-token': ADMIN_API_TOKEN } });
+  },
+};
+
 // --- Companies ---
 export const companies = {
   getAll: (): CompanyLead[] => getItem<CompanyLead[]>('bo_companies', []),

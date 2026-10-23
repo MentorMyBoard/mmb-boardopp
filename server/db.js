@@ -183,7 +183,28 @@ function initDb() {
     );
   `);
 
+  // ── 60-Second Boardroom Challenge entries ──
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS boardroom_challenge_entries (
+      id            TEXT PRIMARY KEY,
+      name          TEXT NOT NULL,
+      email         TEXT NOT NULL,
+      status        TEXT DEFAULT 'registered',
+      style         TEXT,
+      runner_up     TEXT,
+      seconds       INTEGER,
+      overtime      INTEGER DEFAULT 0,
+      casting_vote  INTEGER DEFAULT 0,
+      votes         TEXT,
+      picks         TEXT,
+      created_at    TEXT NOT NULL,
+      completed_at  TEXT
+    );
+    CREATE INDEX IF NOT EXISTS idx_bce_created ON boardroom_challenge_entries(created_at);
+  `);
+
   seedContentTables(db);
+  seedBoardroomChallengeCard(db);
 
   console.log('[DB] Initialized at', DB_PATH);
   return db;
@@ -278,6 +299,18 @@ function seedContentTables(db) {
     };
     db.prepare(`INSERT INTO app_settings (key, value, updated_at) VALUES ('site_content', ?, ?)`).run(JSON.stringify(defaultContent), now);
   }
+}
+
+// Adds the Boardroom Challenge card to the Assessment Hub exactly once. A flag in
+// app_settings stops it reappearing if the admin later deletes or edits the card.
+function seedBoardroomChallengeCard(db) {
+  const flag = db.prepare("SELECT value FROM app_settings WHERE key = 'seed_boardroom_challenge'").get();
+  if (flag) return;
+  const now = new Date().toISOString();
+  const maxOrder = db.prepare('SELECT COALESCE(MAX(order_num), 0) m FROM assessments').get().m;
+  db.prepare(`INSERT OR IGNORE INTO assessments (id, name, description, button_text, url, icon, order_num, active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?)`)
+    .run('a-boardroom-challenge', '60-Second Boardroom Challenge', 'Five real board dilemmas, one clock. Discover your Boardroom Thinking Style and claim your style card.', 'Take the Challenge', '/boardroom-challenge', '⏱', maxOrder + 1, now, now);
+  db.prepare(`INSERT INTO app_settings (key, value, updated_at) VALUES ('seed_boardroom_challenge', '1', ?)`).run(now);
 }
 
 function getDb() {

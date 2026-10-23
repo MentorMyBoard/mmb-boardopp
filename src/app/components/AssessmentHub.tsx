@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
+import { useNavigate } from "react-router";
 import { assessments as assessmentsStore, analytics } from "../utils/store";
 import type { Assessment } from "../utils/store";
 
@@ -14,9 +15,14 @@ export function AssessmentHub() {
     assessmentsStore.getActive().then(setAssessments);
   }, []);
 
+  const navigate = useNavigate();
+
   const handleAssessmentClick = (url: string) => {
     analytics.track('assessment');
-    if (url && url !== '#') window.open(url, '_blank', 'noopener,noreferrer');
+    if (!url || url === '#') return;
+    // Internal pages (e.g. /boardroom-challenge) open in-site; external links in a new tab
+    if (url.startsWith('/')) navigate(url);
+    else window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   return (

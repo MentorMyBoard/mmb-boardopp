@@ -13,6 +13,7 @@ import { AdminCommunity } from "./AdminCommunity";
 import { AdminContent } from "./AdminContent";
 import { AdminBoardUpdates } from "./AdminBoardUpdates";
 import { AdminPopups } from "./AdminPopups";
+import { AdminBoardroomChallenge } from "./AdminBoardroomChallenge";
 
 export function AdminApp() {
   const [isAuth, setIsAuth] = useState(auth.isLoggedIn());
@@ -51,6 +52,7 @@ export function AdminApp() {
         <Route path="content" element={<AdminContent />} />
         <Route path="board-updates" element={<AdminBoardUpdates />} />
         <Route path="popups" element={<AdminPopups />} />
+        <Route path="boardroom-challenge" element={<AdminBoardroomChallenge />} />
       </Routes>
     </AdminLayout>
   );

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router";
 import {
   LayoutDashboard, Users, Building2, BookOpen, Handshake,
-  Quote, UserSquare2, FileText, LogOut, Menu, X, ExternalLink, Newspaper, MonitorPlay,
+  Quote, UserSquare2, FileText, LogOut, Menu, X, ExternalLink, Newspaper, MonitorPlay, Timer,
 } from "lucide-react";
 
 const navItems = [
@@ -10,6 +10,7 @@ const navItems = [
   { label: 'Director Leads', href: '/admin/directors', icon: Users },
   { label: 'Company Leads', href: '/admin/companies', icon: Building2 },
   { label: 'Assessments', href: '/admin/assessments', icon: BookOpen },
+  { label: 'Boardroom Challenge', href: '/admin/boardroom-challenge', icon: Timer },
   { label: 'Partners', href: '/admin/partners', icon: Handshake },
   { label: 'Testimonials', href: '/admin/testimonials', icon: Quote },
   { label: 'Community', href: '/admin/community', icon: UserSquare2 },

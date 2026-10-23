@@ -131,6 +131,64 @@ app.post('/api/company', async (req, res) => {
   }
 });
 
+// ── 60-Second Boardroom Challenge ─────────────────────────────────────────
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const CHALLENGE_STYLES = ['The Guardian', 'The Strategist', 'The Steward', 'The Interrogator', 'The Action Leader'];
+
+// Player signs the board register — creates the entry before the clock starts
+app.post('/api/boardroom-challenge/register', (req, res) => {
+  const name = String(req.body.name || '').trim().slice(0, 80);
+  const email = String(req.body.email || '').trim().slice(0, 120);
+  if (!name || !EMAIL_RE.test(email)) {
+    return res.status(400).json({ success: false, error: 'A name and valid email are required' });
+  }
+  const id = uid();
+  getDb().prepare(`INSERT INTO boardroom_challenge_entries (id, name, email, status, created_at) VALUES (?, ?, ?, 'registered', ?)`)
+    .run(id, name, email, new Date().toISOString());
+  console.log(`[Challenge] Registered: ${name} <${email}>`);
+  res.json({ success: true, id });
+});
+
+// Result of a completed agenda. Fills the registered entry; a replay by the
+// same player is stored as a new completed entry so no attempt is overwritten.
+app.post('/api/boardroom-challenge/:id/result', (req, res) => {
+  const db = getDb();
+  const entry = db.prepare('SELECT * FROM boardroom_challenge_entries WHERE id = ?').get(req.params.id);
+  if (!entry) return res.status(404).json({ success: false, error: 'Entry not found' });
+  const b = req.body;
+  if (!CHALLENGE_STYLES.includes(b.style)) return res.status(400).json({ success: false, error: 'Invalid style' });
+  const now = new Date().toISOString();
+  const vals = [
+    b.style, String(b.runnerUp || '').slice(0, 120), Math.max(0, Math.min(3600, parseInt(b.seconds, 10) || 0)),
+    b.overtime ? 1 : 0, b.castingVote ? 1 : 0, String(b.votes || '').slice(0, 200), String(b.picks || '').slice(0, 10), now,
+  ];
+  let id = entry.id;
+  if (entry.status === 'completed') {
+    id = uid();
+    db.prepare(`INSERT INTO boardroom_challenge_entries (id, name, email, status, style, runner_up, seconds, overtime, casting_vote, votes, picks, created_at, completed_at) VALUES (?, ?, ?, 'completed', ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+      .run(id, entry.name, entry.email, ...vals.slice(0, 7), now, now);
+  } else {
+    db.prepare(`UPDATE boardroom_challenge_entries SET status='completed', style=?, runner_up=?, seconds=?, overtime=?, casting_vote=?, votes=?, picks=?, completed_at=? WHERE id=?`)
+      .run(...vals, id);
+  }
+  res.json({ success: true, id });
+});
+
+app.get('/api/admin/boardroom-challenge', adminGuard, (_req, res) => {
+  const rows = getDb().prepare('SELECT * FROM boardroom_challenge_entries ORDER BY created_at DESC').all();
+  res.json(rows.map((r) => ({
+    id: r.id, name: r.name, email: r.email, status: r.status, style: r.style || '', runnerUp: r.runner_up || '',
+    seconds: r.seconds, overtime: !!r.overtime, castingVote: !!r.casting_vote, votes: r.votes || '', picks: r.picks || '',
+    createdAt: r.created_at, completedAt: r.completed_at,
+  })));
+});
+
+app.delete('/api/admin/boardroom-challenge/:id', adminGuard, (req, res) => {
+  getDb().prepare('DELETE FROM boardroom_challenge_entries WHERE id = ?').run(req.params.id);
+  res.json({ success: true });
+});
+
 // ── Board Updates — Public ─────────────────────────────────────────────────
 
 app.get('/api/board-updates', (req, res) => {
