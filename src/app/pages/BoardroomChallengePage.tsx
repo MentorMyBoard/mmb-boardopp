@@ -21,6 +21,128 @@ const STYLES: Record<Key, { icon: string; name: string; card: string; inst: stri
   F: { icon: '⚡', name: 'The Action Leader', card: 'action-leader', inst: 'Move it forward.', board: 'You turn discussion into decisions, owners and next steps, and you bring real operating experience.', blind: 'Stepping into management’s job. On a board the rule is noses in, fingers out.', part: 'Any of the other four. A mentor helps you move from doing to governing.', who: 'Ratan Tata reminds us:', quote: 'I don’t believe in taking right decisions. I take decisions and then make them right.' },
 };
 
+// LinkedIn-ready text for "Copy my result to share" — plain text, since LinkedIn doesn't render markdown
+const CHALLENGE = '60-Second Boardroom Challenge by MentorMyBoard';
+const SHARE: Record<Key | 'overtime', string> = {
+  S: `I took the ${CHALLENGE}.
+
+My Boardroom Thinking Style: THE STRATEGIST ♟️
+
+I naturally look beyond the immediate issue — connecting patterns, anticipating what comes next, and thinking about the larger direction before making the move.
+
+As Dr. A.P.J. Abdul Kalam said:
+“Dream gives vision, vision gives thoughts and thought leads to actions.”
+
+Strategy is not about predicting the future.
+It is about being better prepared to shape it.
+
+What would your Boardroom Thinking Style be?
+
+Take the ${CHALLENGE}, post your result, and challenge another leader to discover theirs.
+
+#60SecondBoardroomChallenge #MentorMyBoard #TheStrategist #BoardroomThinking #Leadership`,
+  G: `I took the ${CHALLENGE}.
+
+My Boardroom Thinking Style: THE GUARDIAN 🛡️
+
+My instinct is to ask:
+What are we protecting while we pursue growth?
+
+Values. Reputation. People. Stakeholders. Long-term sustainability.
+
+Indra Nooyi puts it powerfully:
+“Bring together what is good for business with what is good for the world.”
+
+Growth matters.
+But what we refuse to compromise along the way matters too.
+
+Are you a Guardian in the Boardroom — or something completely different?
+
+Take the ${CHALLENGE} and share your style.
+
+#60SecondBoardroomChallenge #MentorMyBoard #TheGuardian #Governance #BoardLeadership`,
+  W: `I took the ${CHALLENGE}.
+
+My Boardroom Thinking Style: THE STEWARD 🌳
+
+For me, leadership is not only about what we achieve today.
+
+It is about what we leave stronger for those who come after us.
+
+Jamsetji Tata said:
+“The community is not just another stakeholder in business, but is in fact the very purpose of its existence.”
+
+A Steward thinks beyond tenure, title and quarterly numbers.
+
+What will your leadership leave behind?
+
+Take the ${CHALLENGE} and discover your Boardroom Thinking Style.
+
+#60SecondBoardroomChallenge #MentorMyBoard #TheSteward #LegacyLeadership #Boardroom`,
+  I: `I took the ${CHALLENGE}.
+
+My Boardroom Thinking Style: THE INTERROGATOR 🔎
+
+I am rarely satisfied with the first answer.
+
+My instinct is to question assumptions, challenge comfortable thinking and ask:
+
+“What are we missing?”
+
+Dr. A.P.J. Abdul Kalam said:
+“Thinking should become your capital asset.”
+
+Sometimes the greatest contribution in a Boardroom is not having the answer.
+
+It is asking the question nobody else has asked.
+
+Think you would be an Interrogator too?
+
+Take the ${CHALLENGE} and prove it.
+
+#60SecondBoardroomChallenge #MentorMyBoard #TheInterrogator #CriticalThinking #BoardLeadership`,
+  F: `I took the ${CHALLENGE}.
+
+My Boardroom Thinking Style: THE ACTION LEADER ⚡
+
+When the discussion goes in circles, my instinct is to ask:
+What is the decision, who owns it, and by when?
+
+Ratan Tata said:
+“I don’t believe in taking right decisions. I take decisions and then make them right.”
+
+Momentum matters in the Boardroom.
+The art is moving things forward while letting management manage.
+
+Are you an Action Leader too — or would the clock reveal something else?
+
+Take the ${CHALLENGE} and share your style.
+
+#60SecondBoardroomChallenge #MentorMyBoard #TheActionLeader #DecisionMaking #BoardLeadership`,
+  overtime: `I took the ${CHALLENGE}...
+
+…and I RAN OUT OF TIME! ⏳😄
+
+Maybe I was analysing too much.
+Maybe I was searching for the perfect answer.
+Or maybe the Boardroom just reminded me of something important:
+
+Leadership often demands quick decision making.
+
+Swami Vivekananda said:
+“Arise, Awake, and stop not till the goal is reached.”
+
+This time, the clock won.
+
+Next time, I will.
+
+Could you make the Boardroom decision in 60 seconds?
+
+Take the ${CHALLENGE} and share your result.
+
+#60SecondBoardroomChallenge #MentorMyBoard #RanOutOfTime #DecisionMaking #BoardroomChallenge`,
+};
+
 interface Question { q: string; better?: string; o: Record<Key, string> }
 
 const QS: Question[] = [
@@ -221,7 +343,7 @@ export function BoardroomChallengePage() {
 
   const copyShare = () => {
     if (!result) return;
-    const t = `I took the 60-Second Boardroom Challenge by MentorMyBoard. My Boardroom Thinking Style: ${STYLES[result.top].name}. There may not be one correct answer, but there is always a better question.`;
+    const t = SHARE[result.overtime ? 'overtime' : result.top];
     if (navigator.clipboard) navigator.clipboard.writeText(t).then(() => setToast('Copied. Paste it on LinkedIn.')).catch(() => setToast(t));
     else setToast(t);
   };
